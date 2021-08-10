@@ -14,7 +14,7 @@ func ConnectSQL(name,user,host,port,password string) {
 	var err error
 
 	// mysql配置
-	sourceName := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=true", user, password, host, port, name)
+	sourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=true", user, password, host, port, name)
 	log.Print(sourceName)
 
 	engine, err = xorm.NewEngine("mysql", sourceName)
