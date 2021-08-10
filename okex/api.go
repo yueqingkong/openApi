@@ -1,0 +1,196 @@
+package okex
+
+import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
+	"github.com/yueqingkong/openApi/plat"
+	"github.com/yueqingkong/openApi/util"
+	"log"
+	"strings"
+	"time"
+)
+
+var (
+	okApi = "https://www.okex.com"
+)
+
+type Api struct {
+	ApiKey     string
+	SecretKey  string
+	Passphrase string
+}
+
+// 初始化 Key
+func (self *Api) InitKeys(apikey, secretkey, passphrase string) {
+	self.ApiKey = apikey
+	self.SecretKey = secretkey
+	self.Passphrase = passphrase
+}
+
+func (self *Api) header(request string, path string, body interface{}) map[string]string {
+	var paramString string
+	if body != nil {
+		bodyBytes, _ := json.Marshal(body)
+		paramString = string(bodyBytes)
+	}
+
+	timestamp := util.IsoTime(time.Now())
+	comnination := timestamp + strings.ToUpper(request) + path + paramString
+	sign, err := HmacSha256Base64Signer(comnination, self.SecretKey)
+	if err != nil {
+		log.Print("签名失败", err)
+	}
+
+	var headerMap = make(map[string]string, 0)
+	headerMap["Accept"] = "application/json"
+	headerMap["Content-Type"] = "application/json; charset=UTF-8"
+	headerMap["Cookie"] = "locale=" + "en_US"
+	headerMap["OK-ACCESS-KEY"] = self.ApiKey
+	headerMap["OK-ACCESS-SIGN"] = sign
+	headerMap["OK-ACCESS-TIMESTAMP"] = timestamp
+	headerMap["OK-ACCESS-PASSPHRASE"] = self.Passphrase
+	return headerMap
+}
+
+func HmacSha256Base64Signer(message string, secretKey string) (string, error) {
+	mac := hmac.New(sha256.New, []byte(secretKey))
+	_, err := mac.Write([]byte(message))
+	if err != nil {
+		return "", err
+	}
+
+	return base64.StdEncoding.EncodeToString(mac.Sum(nil)), nil
+}
+
+func (self *Api) SysTime() []*SysTime {
+	api := "/api/v5/public/time"
+
+	var url = okApi + api
+	inst := make([]*SysTime, 0)
+	plat.Get(url, nil, &inst)
+	return inst
+}
+
+// 获取所有产品行情信息
+func (self *Api) Tickers(instType, uly string) []*Ticker {
+	api := "/api/v5/market/tickers"
+	api = fmt.Sprintf("%s?instType=%s", api, instType)
+	if uly != "" {
+		api = fmt.Sprintf("%s&uly=%s", api, uly)
+	}
+
+	var url = okApi + api
+	inst := make([]*Ticker, 0)
+	plat.Get(url, nil, &inst)
+	return inst
+}
+
+// 获取单个产品行情信息
+func (self *Api) Ticker(instId string) []*Ticker {
+	api := "/api/v5/market/ticker"
+	api = fmt.Sprintf("%s?instId=%s", api, instId)
+
+	var url = okApi + api
+	inst := make([]*Ticker, 0)
+	plat.Get(url, nil, &inst)
+	return inst
+}
+
+// 获取所有可交易产品的信息列表
+func (self *Api) Instruments(instType, uly, instId string) []*Instrument {
+	api := "/api/v5/public/instruments"
+	api = fmt.Sprintf("%s?instType=%s", api, instType)
+
+	if uly != "" {
+		api = fmt.Sprintf("%s&uly=%s", api, uly)
+	}
+	if instId != "" {
+		api = fmt.Sprintf("%s&instId=%s", api, instId)
+	}
+
+	var url = okApi + api
+	inst := make([]*Instrument, 0)
+	plat.Get(url, nil, &inst)
+	return inst
+}
+
+// 查询单个交易产品的最高买价和最低卖价
+// 仅适用于交割/永续/期权
+func (self *Api) PriceLimit(instId string) []*PriceLimit {
+	api := "/api/v5/public/price-limit"
+	api = fmt.Sprintf("%s?instId=%s", api, instId)
+
+	var url = okApi + api
+	inst := make([]*PriceLimit, 0)
+	plat.Get(url, nil, &inst)
+	return inst
+}
+
+// 获取预估交割/行权价格
+// 获取交割合约和期权预估交割/行权价。交割/行权预估价只有交割/行权前一小时才有返回值
+func (self *Api) EstimatedPrice(instId string) []*EstimatedPrice {
+	api := "/api/v5/public/estimated-price"
+	api = fmt.Sprintf("%s?instId=%s", api, instId)
+
+	var url = okApi + api
+	inst := make([]*EstimatedPrice, 0)
+	plat.Get(url, nil, &inst)
+	return inst
+}
+
+// 获取所有交易产品K线数据
+// 获取K线数据。K线数据按请求的粒度分组返回，K线数据每个粒度最多可获取最近1440条。
+// bar [1m/3m/5m/15m/30m/1H/2H/4H/6H/12H/1D/1W/1M/3M/6M/1Y]
+func (self *Api) Candles(instId, bar, before string) [][]string {
+	api := "/api/v5/market/candles"
+	api = fmt.Sprintf("%s?instId=%s", api, instId)
+
+	if bar != "" {
+		api = fmt.Sprintf("%s&bar=%s", api, bar)
+	}
+	if before != "" {
+		api = fmt.Sprintf("%s&before=%s", api, before)
+	}
+
+	var url = okApi + api
+	inst := make([][]string, 0)
+	plat.Get(url, nil, &inst)
+	return inst
+}
+
+// 下单
+// 持仓方向，单向持仓模式下此参数非必填，如果填写仅可以选择net；在双向持仓模式下必填，且仅可选择 long 或 short。
+// 双向持仓模式下，side和posSide需要进行组合
+// 开多：买入开多（side 填写 buy； posSide 填写 long ）
+// 开空：卖出开空（side 填写 sell； posSide 填写 short ）
+// 平多：卖出平多（side 填写 sell；posSide 填写 long ）
+// 平空：买入平空（side 填写 buy； posSide 填写 short ）
+
+// 交易数量，表示要购买或者出售的数量。
+// 当币币/币币杠杆以限价买入和卖出时，指交易货币数量。
+// 当币币/币币杠杆以市价买入时，指计价货币的数量。
+// 当币币/币币杠杆以市价卖出时，指交易货币的数量。
+// 当交割、永续、期权买入和卖出时，指合约张数。
+func (self *Api) Order(instId, tdMode, side, posSide string, px, sz float32) []*OrderRes {
+	var api = "/api/v5/trade/order"
+	var url = okApi + api
+
+	param := make(map[string]interface{}, 0)
+	param["instId"] = instId
+	param["tdMode"] = tdMode
+
+	param["side"] = side
+	if posSide != "" {
+		param["posSide"] = posSide
+	}
+	param["ordType"] = "limit"
+	param["sz"] = sz
+	param["px"] = px
+
+	order := make([]*OrderRes, 0)
+	plat.Post(url, self.header("post", api, param), param, &order)
+	return order
+}
