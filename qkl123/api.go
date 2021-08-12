@@ -17,7 +17,6 @@ type Api struct {
 	SecretKey  string
 	Passphrase string
 	Auth       string
-	Token      string
 }
 
 func (self *Api) Candles(pair, level, end_time string) []Candle {
@@ -34,10 +33,8 @@ func (self *Api) Candles(pair, level, end_time string) []Candle {
 
 	header := make(map[string]string, 0)
 	auth := self.Auth
-	token := self.Token
 
 	header["Authorization"] = auth
-	header["gate-token"] = token
 
 	var url = qklApi + api
 	inst := make([]Candle, 0)

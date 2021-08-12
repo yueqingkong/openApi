@@ -12,17 +12,17 @@ import (
 // Coin K线数据
 type Coin struct {
 	Id         int64
-	Plat       string    `xorm:"plat varchar(255) unique(pl-time) index(pl-sy-t)"`
-	Symbol     string    `xorm:"symbol varchar(255) unique(pl-time) index(pl-sy-t)"`
-	Times      string    `xorm:"times varchar(255) unique(pl-time) index(pl-sy-t)"`         // 时间间隔
-	Period     string    `json:"period" xorm:"varchar(255) unique(pl-time) index(pl-sy-t)"` // 合约类型 spot,week
+	Plat       string    `xorm:"plat varchar(255) unique(pl-time) index(pl-sy-t) index(p-s-t-p-c)"`
+	Symbol     string    `xorm:"symbol varchar(255) unique(pl-time) index(pl-sy-t) index(p-s-t-p-c)"`
+	Times      string    `xorm:"times varchar(255) unique(pl-time) index(pl-sy-t) index(p-s-t-p-c)"`         // 时间间隔
+	Period     string    `json:"period" xorm:"varchar(255) unique(pl-time) index(pl-sy-t) index(p-s-t-p-c)"` // 合约类型 spot,week
 	Open       float32   `xorm:"float"`
 	Close      float32   `xorm:"float"`
 	High       float32   `xorm:"float"`
 	Low        float32   `xorm:"float"`
 	Volume     float32   `xorm:"float"`
 	Timestamp  int64     `json:"time_stamp" xorm:"bigint time_stamp index unique(pl-time)"` // 毫秒
-	CreateTime time.Time `json:"create_time" xorm:"DATETIME create_time"`
+	CreateTime time.Time `json:"create_time" xorm:"DATETIME create_time index(p-s-t-p-c)"`
 }
 
 func dPlat(p conset.PLAT) string {
@@ -180,7 +180,6 @@ func (self *Coin) All(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD
 	return coins, nil
 }
 
-// todo 模拟测试 需要去掉最后一条数据
 func (self *Coin) Lasts(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD, times conset.TIMES, limit int, end time.Time) ([]Coin, error) {
 	coins := make([]Coin, 0)
 
