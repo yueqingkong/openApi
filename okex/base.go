@@ -20,6 +20,18 @@ func (self *Base) Init(strings []string) {
 	}
 }
 
+func (self *Base) ccy(symbol conset.SYMBOL) string {
+	var s string
+
+	switch symbol {
+	case conset.BTC_USD, conset.BTC_USDT:
+		s = "BTC"
+	case conset.ETH_USD, conset.ETH_USDT:
+		s = "ETH"
+	}
+	return s
+}
+
 func (self *Base) instId(symbol conset.SYMBOL, period conset.PERIOD) string {
 	var s string
 	switch period {
@@ -135,6 +147,8 @@ func (self *Base) TdMode(period conset.PERIOD) string {
 	switch period {
 	case conset.SPOT:
 		s = "cash"
+	case conset.SWAP:
+		s = "isolated"
 	default:
 		s = "isolated"
 	}
@@ -205,6 +219,26 @@ func (self *Base) Price(symbol conset.SYMBOL, period conset.PERIOD) float32 {
 	}
 
 	return util.Float32(tickers[0].Last)
+}
+
+func (self *Base) Balance(symbol conset.SYMBOL) float32 {
+	bs := self.balance(self.ccy(symbol))
+	if len(bs) == 0 {
+		return 0.0
+	}
+
+	return util.Float32(bs[0].TotalEq)
+}
+
+func (self *Base) SetLeverage(symbol conset.SYMBOL, period conset.PERIOD, direct int32, level string) bool {
+	_, poside := self.Side(period, direct)
+
+	bs := self.setLeverage(self.instId(symbol, period), level, self.TdMode(period), poside)
+	if len(bs) == 0 {
+		return false
+	}
+
+	return true
 }
 
 func (self *Base) Orders(symbol conset.SYMBOL, period conset.PERIOD, direct int32, price, sz float32) bool {

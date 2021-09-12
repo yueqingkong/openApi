@@ -8,9 +8,9 @@ import (
 )
 
 type Response struct {
-	Code string      `json:"code"`
-	Msg  string      `json:"msg"`
-	Data interface{} `json:"data"`
+	Code string        `json:"code"`
+	Msg  string        `json:"msg"`
+	Data []interface{} `json:"data"`
 }
 
 // GET
@@ -29,7 +29,7 @@ func Get(url string, headers map[string]string, inter interface{}) error {
 	} else {
 		data := &Response{}
 
-		log.Printf("Get Body %s", string(resp.Body()))
+		// log.Printf("Get Body %s", string(resp.Body()))
 		if err = json.Unmarshal(resp.Body(), data); err != nil {
 			log.Printf("Get err: %v", err)
 		} else {
@@ -57,11 +57,12 @@ func Post(url string, headers map[string]string, params interface{}, inter inter
 		Post(url)
 
 	if err != nil {
+		log.Printf("Post err: %+v", err)
 		return err
 	} else {
 		data := &Response{}
 
-		log.Printf("Post Body %s", string(resp.Body()))
+		// log.Printf("Post Bodyody %s", string(resp.Body()))
 		if err = json.Unmarshal(resp.Body(), data); err != nil {
 			log.Printf("Post err: %v", err)
 		} else {
@@ -69,32 +70,6 @@ func Post(url string, headers map[string]string, params interface{}, inter inter
 			if err = json.Unmarshal(dataBytes, inter); err != nil {
 				log.Printf("Post err: %v", err)
 			}
-		}
-	}
-	return err
-}
-
-// POST 表单
-func PostForm(url string, headers map[string]string, params map[string]string, inter interface{}) error {
-	if headers == nil {
-		headers = make(map[string]string)
-		headers["Content-Type"] = "application/x-www-form-urlencoded"
-	}
-
-	resp, err := resty.New().SetTimeout(time.Minute * 1).R().
-		SetHeaders(headers).
-		SetFormData(params).
-		Post(url)
-
-	if err != nil {
-		log.Print("[PostForm]", err, "[url]", url)
-	}
-	// log.Print("[PostForm]",resp.String())
-
-	if inter != nil {
-		err = json.Unmarshal(resp.Body(), &inter)
-		if err != nil {
-			log.Print("[net][PostForm]", err, url)
 		}
 	}
 	return err

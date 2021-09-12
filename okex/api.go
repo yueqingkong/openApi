@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"github.com/yueqingkong/openApi/plat"
 	"github.com/yueqingkong/openApi/util"
 	"log"
@@ -32,7 +31,7 @@ func (self *Api) InitKeys(apikey, secretkey, passphrase string) {
 
 func (self *Api) header(request string, path string, body interface{}) map[string]string {
 	var paramString string
-	if body != nil {
+	if body != nil && body != "" {
 		bodyBytes, _ := json.Marshal(body)
 		paramString = string(bodyBytes)
 	}
@@ -40,6 +39,7 @@ func (self *Api) header(request string, path string, body interface{}) map[strin
 	timestamp := util.IsoTime(time.Now())
 	comnination := timestamp + strings.ToUpper(request) + path + paramString
 	sign, err := HmacSha256Base64Signer(comnination, self.SecretKey)
+
 	if err != nil {
 		log.Print("签名失败", err)
 	}
@@ -48,6 +48,7 @@ func (self *Api) header(request string, path string, body interface{}) map[strin
 	headerMap["Accept"] = "application/json"
 	headerMap["Content-Type"] = "application/json; charset=UTF-8"
 	headerMap["Cookie"] = "locale=" + "en_US"
+
 	headerMap["OK-ACCESS-KEY"] = self.ApiKey
 	headerMap["OK-ACCESS-SIGN"] = sign
 	headerMap["OK-ACCESS-TIMESTAMP"] = timestamp
@@ -77,10 +78,13 @@ func (self *Api) SysTime() []*SysTime {
 // 获取所有产品行情信息
 func (self *Api) Tickers(instType, uly string) []*Ticker {
 	api := "/api/v5/market/tickers"
-	api = fmt.Sprintf("%s?instType=%s", api, instType)
+
+	params := make(map[string]string)
+	params["instType"] = instType
 	if uly != "" {
-		api = fmt.Sprintf("%s&uly=%s", api, uly)
+		params["uly"] = uly
 	}
+	api = api + parseParams(params)
 
 	var url = okApi + api
 	inst := make([]*Ticker, 0)
@@ -91,7 +95,10 @@ func (self *Api) Tickers(instType, uly string) []*Ticker {
 // 获取单个产品行情信息
 func (self *Api) Ticker(instId string) []*Ticker {
 	api := "/api/v5/market/ticker"
-	api = fmt.Sprintf("%s?instId=%s", api, instId)
+
+	params := make(map[string]string)
+	params["instId"] = instId
+	api = api + parseParams(params)
 
 	var url = okApi + api
 	inst := make([]*Ticker, 0)
@@ -102,14 +109,16 @@ func (self *Api) Ticker(instId string) []*Ticker {
 // 获取所有可交易产品的信息列表
 func (self *Api) Instruments(instType, uly, instId string) []*Instrument {
 	api := "/api/v5/public/instruments"
-	api = fmt.Sprintf("%s?instType=%s", api, instType)
 
+	params := make(map[string]string)
+	params["instType"] = instType
 	if uly != "" {
-		api = fmt.Sprintf("%s&uly=%s", api, uly)
+		params["uly"] = uly
 	}
 	if instId != "" {
-		api = fmt.Sprintf("%s&instId=%s", api, instId)
+		params["instId"] = instId
 	}
+	api = api + parseParams(params)
 
 	var url = okApi + api
 	inst := make([]*Instrument, 0)
@@ -121,7 +130,10 @@ func (self *Api) Instruments(instType, uly, instId string) []*Instrument {
 // 仅适用于交割/永续/期权
 func (self *Api) PriceLimit(instId string) []*PriceLimit {
 	api := "/api/v5/public/price-limit"
-	api = fmt.Sprintf("%s?instId=%s", api, instId)
+
+	params := make(map[string]string)
+	params["instId"] = instId
+	api = api + parseParams(params)
 
 	var url = okApi + api
 	inst := make([]*PriceLimit, 0)
@@ -133,7 +145,10 @@ func (self *Api) PriceLimit(instId string) []*PriceLimit {
 // 获取交割合约和期权预估交割/行权价。交割/行权预估价只有交割/行权前一小时才有返回值
 func (self *Api) EstimatedPrice(instId string) []*EstimatedPrice {
 	api := "/api/v5/public/estimated-price"
-	api = fmt.Sprintf("%s?instId=%s", api, instId)
+
+	params := make(map[string]string)
+	params["instId"] = instId
+	api = api + parseParams(params)
 
 	var url = okApi + api
 	inst := make([]*EstimatedPrice, 0)
@@ -146,19 +161,53 @@ func (self *Api) EstimatedPrice(instId string) []*EstimatedPrice {
 // bar [1m/3m/5m/15m/30m/1H/2H/4H/6H/12H/1D/1W/1M/3M/6M/1Y]
 func (self *Api) Candles(instId, bar, before string) [][]string {
 	api := "/api/v5/market/candles"
-	api = fmt.Sprintf("%s?instId=%s", api, instId)
 
+	params := make(map[string]string)
+	params["instId"] = instId
 	if bar != "" {
-		api = fmt.Sprintf("%s&bar=%s", api, bar)
+		params["bar"] = bar
 	}
 	if before != "" {
-		api = fmt.Sprintf("%s&before=%s", api, before)
+		params["before"] = before
 	}
+	api = api + parseParams(params)
 
 	var url = okApi + api
 	inst := make([][]string, 0)
 	plat.Get(url, nil, &inst)
 	return inst
+}
+
+// 获取账户中资金余额信息
+func (self *Api) balance(ccy string) []*Balance {
+	var api = "/api/v5/account/balance"
+
+	params := make(map[string]string)
+	if ccy != "" {
+		params["ccy"] = ccy
+	}
+	api = api + parseParams(params)
+
+	var url = okApi + api
+	result := make([]*Balance, 0)
+	plat.Get(url, self.header("get", api, nil), &result)
+	return result
+}
+
+// 设置杠杆倍数
+func (self *Api) setLeverage(instId, lever, mgnMode, posSide string) []*SetLeverage {
+	var api = "/api/v5/account/set-leverage"
+	var url = okApi + api
+
+	params := make(map[string]interface{})
+	params["instId"] = instId
+	params["lever"] = lever
+	params["mgnMode"] = mgnMode
+	params["posSide"] = posSide
+
+	results := make([]*SetLeverage, 0)
+	plat.Post(url, self.header("post", api, params), params, &results)
+	return results
 }
 
 // 下单
@@ -178,19 +227,25 @@ func (self *Api) Order(instId, tdMode, side, posSide string, px, sz float32) []*
 	var api = "/api/v5/trade/order"
 	var url = okApi + api
 
-	param := make(map[string]interface{}, 0)
-	param["instId"] = instId
-	param["tdMode"] = tdMode
+	params := make(map[string]interface{}, 0)
+	params["instId"] = instId
+	params["tdMode"] = tdMode
+	params["posSide"] = posSide
 
-	param["side"] = side
-	if posSide != "" {
-		param["posSide"] = posSide
+	params["side"] = side
+	params["ordType"] = "limit"
+	params["sz"] = sz
+	params["px"] = px
+
+	results := make([]*OrderRes, 0)
+	plat.Post(url, self.header("post", api, params), params, &results)
+	return results
+}
+
+func parseParams(params map[string]string) string {
+	url := "?"
+	for k, v := range params {
+		url = url + k + "=" + v + "&"
 	}
-	param["ordType"] = "limit"
-	param["sz"] = sz
-	param["px"] = px
-
-	order := make([]*OrderRes, 0)
-	plat.Post(url, self.header("post", api, param), param, &order)
-	return order
+	return url[:len(url)-1]
 }

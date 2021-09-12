@@ -77,3 +77,47 @@ type OrderRes struct {
 	SCode   string `json:"sCode"`
 	SMsg    string `json:"sMsg"`
 }
+
+type Balance struct {
+	AdjEq   string `json:"adjEq"`
+	Details []struct {
+		AvailBal      string `json:"availBal"`
+		AvailEq       string `json:"availEq"`
+		CashBal       string `json:"cashBal"`
+		Ccy           string `json:"ccy"`
+		CrossLiab     string `json:"crossLiab"`
+		DisEq         string `json:"disEq"`
+		Eq            string `json:"eq"`
+		EqUsd         string `json:"eqUsd"`
+		FrozenBal     string `json:"frozenBal"`
+		Interest      string `json:"interest"`
+		IsoEq         string `json:"isoEq"`
+		IsoLiab       string `json:"isoLiab"`
+		IsoUpl        string `json:"isoUpl"`
+		Liab          string `json:"liab"`
+		MaxLoan       string `json:"maxLoan"`
+		MgnRatio      string `json:"mgnRatio"`
+		NotionalLever string `json:"notionalLever"`
+		OrdFrozen     string `json:"ordFrozen"`
+		Twap          string `json:"twap"`
+		UTime         string `json:"uTime"`
+		Upl           string `json:"upl"`
+		UplLiab       string `json:"uplLiab"`
+		StgyEq        string `json:"stgyEq"`
+	} `json:"details"`
+	Imr         string `json:"imr"`
+	IsoEq       string `json:"isoEq"`
+	MgnRatio    string `json:"mgnRatio"`
+	Mmr         string `json:"mmr"`
+	NotionalUsd string `json:"notionalUsd"`
+	OrdFroz     string `json:"ordFroz"`
+	TotalEq     string `json:"totalEq"`
+	UTime       string `json:"uTime"`
+}
+
+type SetLeverage struct {
+	Lever   string `json:"lever"`
+	MgnMode string `json:"mgnMode"`
+	InstID  string `json:"instId"`
+	PosSide string `json:"posSide"`
+}
