@@ -76,12 +76,11 @@ func (self *Base) Times(times conset.TIMES) string {
 	return s
 }
 
-func (self *Api) InitKeys(apikey, secretkey, passphrase, auth, token string) {
+func (self *Api) InitKeys(apikey, secretkey, passphrase, auth string) {
 	self.ApiKey = apikey
 	self.SecretKey = secretkey
 	self.Passphrase = passphrase
 	self.Auth = auth
-	self.Token = token
 }
 
 func (self *Base) Pull(symbol conset.SYMBOL, period conset.PERIOD, times conset.TIMES, start time.Time) bool {
