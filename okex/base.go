@@ -155,31 +155,31 @@ func (self *Base) TdMode(period conset.PERIOD) string {
 	return s
 }
 
-func (self *Base) Side(period conset.PERIOD, direct int32) (string, string) {
+func (self *Base) Side(period conset.PERIOD, direct conset.OPERATION) (string, string) {
 	var side string
 	var posSide string
 
 	switch period {
 	case conset.SPOT:
-		if direct == 1 || direct == 3 {
-			side = "buy"
+		if direct == conset.BUY_HIGH || direct == conset.SELL_HIGH {
+			side = conset.BUY
 		} else {
-			side = "sell"
+			side = conset.SELL
 		}
-	default:
+	case conset.SWAP:
 		switch direct {
-		case 1:
-			side = "buy"
-			posSide = "long"
-		case 2:
-			side = "sell"
-			posSide = "short"
-		case 3:
-			side = "sell"
-			posSide = "long"
-		case 4:
-			side = "buy"
-			posSide = "short"
+		case conset.BUY_HIGH:
+			side = conset.BUY
+			posSide = conset.LONG
+		case conset.BUY_LOW:
+			side = conset.SELL
+			posSide = conset.SHORT
+		case conset.SELL_HIGH:
+			side = conset.SELL
+			posSide = conset.LONG
+		case conset.SELL_LOW:
+			side = conset.SELL
+			posSide = conset.SHORT
 		}
 	}
 	return side, posSide
@@ -230,7 +230,7 @@ func (self *Base) Balance(symbol conset.SYMBOL) float32 {
 	return util.Float32(bs[0].TotalEq)
 }
 
-func (self *Base) SetLeverage(symbol conset.SYMBOL, period conset.PERIOD, direct int32, level string) bool {
+func (self *Base) SetLeverage(symbol conset.SYMBOL, period conset.PERIOD, direct conset.OPERATION, level string) bool {
 	_, poside := self.Side(period, direct)
 
 	bs := self.setLeverage(self.instId(symbol, period), level, self.TdMode(period), poside)
@@ -241,8 +241,9 @@ func (self *Base) SetLeverage(symbol conset.SYMBOL, period conset.PERIOD, direct
 	return true
 }
 
-func (self *Base) Orders(symbol conset.SYMBOL, period conset.PERIOD, direct int32, price, sz float32) bool {
+func (self *Base) Orders(symbol conset.SYMBOL, period conset.PERIOD, direct conset.OPERATION, price, sz float32) bool {
 	side, poside := self.Side(period, direct)
+	price = priceLimit(direct, price)
 
 	orders := self.Order(self.instId(symbol, period), self.TdMode(period), side, poside, price, sz)
 	if len(orders) == 0 {
@@ -250,4 +251,16 @@ func (self *Base) Orders(symbol conset.SYMBOL, period conset.PERIOD, direct int3
 	}
 
 	return orders[0].SCode == "0"
+}
+
+// limit 成交价格
+func priceLimit(direct conset.OPERATION, price float32) float32 {
+	rate := float32(0.001)
+	switch direct {
+	case conset.BUY_HIGH, conset.SELL_LOW:
+		price = price * (1.0 + rate)
+	case conset.SELL_HIGH, conset.BUY_LOW:
+		price = price * (1.0 - rate)
+	}
+	return price
 }

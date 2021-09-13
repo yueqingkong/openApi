@@ -51,3 +51,10 @@ const (
 	SELL_HIGH = 3 // 平多/(现货)卖出
 	SELL_LOW  = 4
 )
+
+const (
+	BUY   = "buy"
+	SELL  = "sell"
+	LONG  = "long"
+	SHORT = "short"
+)
