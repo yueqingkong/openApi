@@ -178,7 +178,7 @@ func (self *Base) Side(period conset.PERIOD, direct conset.OPERATION) (string, s
 			side = conset.SELL
 			posSide = conset.LONG
 		case conset.SELL_LOW:
-			side = conset.SELL
+			side = conset.BUY
 			posSide = conset.SHORT
 		}
 	}
