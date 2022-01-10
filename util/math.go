@@ -32,6 +32,19 @@ func Max(values ...float32) float32 {
 	return max
 }
 
+// 最小值
+func Min(values ...float32) float32 {
+	var min float32
+	for i, value := range values {
+		if i == 0 {
+			min = value
+		} else if value < min {
+			min = value
+		}
+	}
+	return min
+}
+
 // 向下取整
 func Floor(value float32) float32 {
 	return float32(math.Floor(float64(value)))
