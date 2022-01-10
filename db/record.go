@@ -3,11 +3,12 @@ package db
 import (
 	"errors"
 	"github.com/yueqingkong/openApi/conset"
+	"log"
 	"time"
 	"xorm.io/builder"
 )
 
-// MarginRecord 交易记录
+// Record 交易记录
 type Record struct {
 	Id            int64
 	Plat          string    `xorm:"varchar(255) plat index(plat-symbol-period)"`   // 平台名称
@@ -48,6 +49,54 @@ func (self *Record) Last(pt conset.PLAT, symbol conset.SYMBOL, period conset.PER
 	}
 
 	return nil
+}
+
+// 最近首次开仓
+func (self *Record) LastFirstOpenRecord(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD) error {
+	self.Plat = dPlat(pt)
+	self.Symbol = dSymbol(symbol)
+	self.Period = dPeriod(period)
+
+	sql, args, _ := builder.ToSQL(builder.In("operation", conset.BUY_HIGH, conset.BUY_LOW).
+		And(builder.Eq{"position": 1}))
+	if b, err := Engine().Where(sql, args...).Desc("create_time").Get(self); err != nil || !b {
+		return errors.New("get")
+	}
+
+	return nil
+}
+
+// 最近未平仓
+func (self *Record) RecentOpenRecords(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD) ([]*Record, error) {
+	if err := self.LastFirstOpenRecord(pt, symbol, period); err != nil {
+		return nil, err
+	}
+	records := make([]*Record, 0)
+
+	sql, args, _ := builder.ToSQL(builder.Gte{"id": self.Id})
+	if err := Engine().Where(sql, args...).Asc("create_time").Find(&records, &Record{}); err != nil {
+		return nil, err
+	}
+
+	return records, nil
+}
+
+// 昨日平仓
+func (self *Record) YesTodayCloseRecords(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD) ([]*Record, error) {
+	self.Plat = dPlat(pt)
+	self.Symbol = dSymbol(symbol)
+	self.Period = dPeriod(period)
+
+	records := make([]*Record, 0)
+
+	currentTime := time.Now()
+	startTime := time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day()-1, 0, 0, 0, 0, currentTime.Location())
+	sql, args, _ := builder.ToSQL(builder.Gte{"create_time": startTime})
+	if err := Engine().Where(sql, args...).Find(&records, self); err != nil {
+		log.Printf("history closeRecords err: %v", err)
+		return nil, err
+	}
+	return records, nil
 }
 
 func (self *Record) Clear() error {
