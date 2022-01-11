@@ -61,8 +61,12 @@ func TimeMillis(t time.Time) int64 {
 	return t.Unix() * 1000
 }
 
-func TimeToString(t time.Time) string {
+func TimeFormatString(t time.Time) string {
 	return t.Format("2006-01-02 15:04:05")
+}
+
+func TimeFormatDay(t time.Time) string {
+	return t.Format("2006-01-02")
 }
 
 func StringToTime(str string) time.Time {
