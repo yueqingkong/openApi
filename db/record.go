@@ -60,7 +60,7 @@ func (self *Record) LastFirstOpenRecord(pt conset.PLAT, symbol conset.SYMBOL, pe
 	sql, args, _ := builder.ToSQL(builder.In("operation", conset.BUY_HIGH, conset.BUY_LOW).
 		And(builder.Eq{"position": 1}))
 	if b, err := Engine().Where(sql, args...).Desc("create_time").Get(self); err != nil || !b {
-		return errors.New("get")
+		return err
 	}
 
 	return nil
