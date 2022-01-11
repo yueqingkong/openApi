@@ -82,7 +82,7 @@ func (self *Record) RecentOpenRecords(pt conset.PLAT, symbol conset.SYMBOL, peri
 }
 
 // 昨日平仓
-func (self *Record) YesTodayCloseRecords(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD) ([]*Record, error) {
+func (self *Record) YesTodayRecords(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD) ([]*Record, error) {
 	self.Plat = dPlat(pt)
 	self.Symbol = dSymbol(symbol)
 	self.Period = dPeriod(period)
