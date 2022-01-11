@@ -12,7 +12,7 @@ func QQMail(from string, to []string, title string, body string, password string
 	m.SetHeader(`To`, to...)
 	m.SetHeader(`Subject`, title)
 	m.SetBody(`text/html`, body)
-	dialog := gomail.NewDialer(`smtp.qq.com`, 25, from, password)
+	dialog := gomail.NewDialer(`smtp.qq.com`, 465, from, password)
 	dialog.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 	if err := dialog.DialAndSend(m); err != nil {
 		log.Printf("QQMail: %v", err)
