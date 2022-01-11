@@ -23,7 +23,7 @@ func ConnectSQL(name,user,host,port,password string) {
 	}
 
 	engine.ShowSQL(true)
-	err = engine.Sync2(new(Coin), new(Account), new(Record),new(AccountDaily))
+	err = engine.Sync2(new(Coin), new(Account), new(Record),new(AccountDay))
 	if err != nil {
 		log.Fatal("[MySql] 同步表失败", err)
 	}
