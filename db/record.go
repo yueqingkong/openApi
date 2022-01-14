@@ -24,8 +24,8 @@ type Record struct {
 	EstimatedLoss float32   `xorm:"float"`                                         // 预计亏损
 	Detail        string    `xorm:"detail text"`                                   // 描述 usd->token | ust<-token
 	Profit        float32   `xorm:"float"`                                         // 收益
-	ProfitRate    float32   `xorm:"float"`                                         // 收益率
-	TotalRate     float32   `xorm:"float"`                                         // 总收益率
+	ProfitRate    float32   `xorm:"float"`                                         // 收益率(百分比 %)
+	TotalRate     float32   `xorm:"float"`                                         // 总收益率(百分比 %)
 	CreateTime    time.Time `json:"create_time" xorm:"create_time DateTime index"` // 时间
 }
 
