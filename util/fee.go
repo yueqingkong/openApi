@@ -51,6 +51,6 @@ func ProfitRate(profit float32, total float32) float32 {
 	if profit == 0 || total == 0 {
 		return 0.0
 	}
-	rate := profit / total * 100
+	rate := profit / total
 	return rate
 }
