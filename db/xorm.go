@@ -2,9 +2,10 @@ package db
 
 import (
 	"fmt"
-	"github.com/go-xorm/xorm"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/go-xorm/xorm"
 	"log"
+	"time"
 )
 
 var engine *xorm.Engine
@@ -14,7 +15,7 @@ func ConnectSQL(name,user,host,port,password string) {
 	var err error
 
 	// mysql配置
-	sourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=true", user, password, host, port, name)
+	sourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=true&loc=Local", user, password, host, port, name)
 	log.Print(sourceName)
 
 	engine, err = xorm.NewEngine("mysql", sourceName)
@@ -23,6 +24,9 @@ func ConnectSQL(name,user,host,port,password string) {
 	}
 
 	engine.ShowSQL(true)
+	// 本地时区
+	engine.DatabaseTZ = time.Local // 必须
+	engine.TZLocation = time.Local // 必须
 	err = engine.Sync2(new(Coin), new(Account), new(Record),new(AccountDay))
 	if err != nil {
 		log.Fatal("[MySql] 同步表失败", err)
