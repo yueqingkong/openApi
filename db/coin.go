@@ -47,6 +47,154 @@ func dSymbol(symbol conset.SYMBOL) string {
 		s = "eth_usd"
 	case conset.ETH_USDT:
 		s = "eth_usdt"
+	case conset.LTC_USD:
+		s = "ltc_usd"
+	case conset.LTC_USDT:
+		s = "ltc_usdt"
+	case conset.DOT_USD:
+		s = "dot_usd"
+	case conset.DOT_USDT:
+		s = "dot_usdt"
+	case conset.DOGE_USD:
+		s = "doge_usd"
+	case conset.DOGE_USDT:
+		s = "doge_usdt"
+	case conset.LUNA_USD:
+		s = "luna_usd"
+	case conset.LUNA_USDT:
+		s = "luna_usdt"
+	case conset.TONCOIN_USD:
+		s = "toncoin_usd"
+	case conset.TONCOIN_USDT:
+		s = "toncoin_usdt"
+	case conset.SHIBI_USD:
+		s = "shib_usd"
+	case conset.SHIBI_USDT:
+		s = "shib_usdt"
+	case conset.MATIC_USD:
+		s = "matic_usd"
+	case conset.MATIC_USDT:
+		s = "matic_usdt"
+	case conset.CRO_USD:
+		s = "cro_usd"
+	case conset.CRO_USDT:
+		s = "cro_usdt"
+	case conset.BCH_USD:
+		s = "bch_usd"
+	case conset.BCH_USDT:
+		s = "bch_usdt"
+	case conset.FTM_USD:
+		s = "ftm_usd"
+	case conset.FTM_USDT:
+		s = "ftm_usdt"
+	case conset.XLM_USD:
+		s = "xlm_usd"
+	case conset.XLM_USDT:
+		s = "xlm_usdt"
+	case conset.AXS_USD:
+		s = "axs_usd"
+	case conset.AXS_USDT:
+		s = "axs_usdt"
+	case conset.ONE_USD:
+		s = "one_usd"
+	case conset.ONE_USDT:
+		s = "one_usdt"
+	case conset.NEAR_USD:
+		s = "near_usd"
+	case conset.NEAR_USDT:
+		s = "near_usdt"
+	case conset.ICP_USD:
+		s = "icp_usd"
+	case conset.ICP_USDT:
+		s = "icp_usdt"
+	case conset.LEO_USD:
+		s = "leo_usd"
+	case conset.LEO_USDT:
+		s = "leo_usdt"
+	case conset.IOTA_USD:
+		s = "iota_usd"
+	case conset.IOTA_USDT:
+		s = "iota_usdt"
+	case conset.ADA_USD:
+		s = "ada_usd"
+	case conset.ADA_USDT:
+		s = "ada_usdt"
+	case conset.FIL_USD:
+		s = "fil_usd"
+	case conset.FIL_USDT:
+		s = "fil_usdt"
+	case conset.ATOM_USD:
+		s = "atom_usd"
+	case conset.ATOM_USDT:
+		s = "atom_usdt"
+	case conset.XRP_USD:
+		s = "xrp_usd"
+	case conset.XRP_USDT:
+		s = "xrp_usdt"
+	case conset.LINK_USD:
+		s = "link_usd"
+	case conset.LINK_USDT:
+		s = "link_usdt"
+	case conset.EOS_USD:
+		s = "eos_usd"
+	case conset.EOS_USDT:
+		s = "eos_usdt"
+	case conset.UNI_USD:
+		s = "uni_usd"
+	case conset.UNI_USDT:
+		s = "uni_usdt"
+	case conset.CRV_USD:
+		s = "crv_usd"
+	case conset.CRV_USDT:
+		s = "crv_usdt"
+	case conset.THETA_USD:
+		s = "theta_usd"
+	case conset.THETA_USDT:
+		s = "theta_usdt"
+	case conset.ALGO_USD:
+		s = "algo_usd"
+	case conset.ALGO_USDT:
+		s = "algo_usdt"
+	case conset.ETC_USD:
+		s = "etc_usd"
+	case conset.ETC_USDT:
+		s = "etc_usdt"
+	case conset.SAND_USD:
+		s = "sand_usd"
+	case conset.SAND_USDT:
+		s = "sand_usdt"
+	case conset.SOL_USD:
+		s = "sol_usd"
+	case conset.SOL_USDT:
+		s = "sol_usdt"
+	case conset.XTZ_USD:
+		s = "xtz_usd"
+	case conset.XTZ_USDT:
+		s = "xtz_usdt"
+	case conset.DASH_USD:
+		s = "dash_usd"
+	case conset.DASH_USDT:
+		s = "dash_usdt"
+	case conset.TRX_USD:
+		s = "trx_usd"
+	case conset.TRX_USDT:
+		s = "trx_usdt"
+	case conset.XMR_USD:
+		s = "xmr_usd"
+	case conset.XMR_USDT:
+		s = "xmr_usdt"
+	case conset.MANA_USD:
+		s = "mana_usd"
+	case conset.MANA_USDT:
+		s = "mana_usdt"
+	case conset.SUSHI_USD:
+		s = "sushi_usd"
+	case conset.SUSHI_USDT:
+		s = "sushi_usdt"
+	case conset.ZEC_USD:
+		s = "zec_usd"
+	case conset.ZEC_USDT:
+		s = "zec_usdt"
 	}
 	return s
 }
