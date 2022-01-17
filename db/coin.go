@@ -39,6 +39,10 @@ func dPlat(p conset.PLAT) string {
 func dSymbol(symbol conset.SYMBOL) string {
 	var s string
 	switch symbol {
+	case conset.USD:
+		s = "usd"
+	case conset.USDT:
+		s = "usdt"
 	case conset.BTC_USD:
 		s = "btc_usd"
 	case conset.BTC_USDT:

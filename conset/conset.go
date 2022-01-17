@@ -13,6 +13,8 @@ const (
 
 const (
 	BTC_USD SYMBOL = iota + 10
+	USD
+	USDT
 	BTC_USDT
 	ETH_USD
 	ETH_USDT
