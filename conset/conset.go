@@ -120,10 +120,10 @@ const (
 )
 
 const (
-	BUY_HIGH OPERATION = iota + 1 // 买入开多/(现货)买入
-	BUY_LOW
-	SELL_HIGH // 平多/(现货)卖出
-	SELL_LOW
+	BUY_HIGH  = 1 // 买入开多/(现货)买入
+	BUY_LOW   = 2
+	SELL_HIGH = 3 // 平多/(现货)卖出
+	SELL_LOW  = 4
 )
 
 const (
