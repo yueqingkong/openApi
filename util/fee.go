@@ -1,5 +1,7 @@
 package util
 
+import "github.com/yueqingkong/openApi/conset"
+
 // token - > 张数
 // 保证金*币的价格*杠杆倍数／合约面值=可开张数
 func BuySize(price float32, buyunit float32, value float32) float32 {
@@ -35,11 +37,11 @@ func PayFee(price float32, size, value float32) float32 {
 
 // 收益
 // op 3 平多 4 平空
-func Profit(op int32, price float32, lastprice float32, size, value float32) float32 {
+func Profit(op conset.OPERATION, price float32, lastprice float32, size, value float32) float32 {
 	var profit float32
-	if op == 3 {
+	if op == conset.BUY_HIGH || op == conset.SELL_HIGH {
 		profit = (value/lastprice - value/price) * size
-	} else if op == 4 {
+	} else if op == conset.BUY_LOW || op == conset.SELL_LOW {
 		profit = (value/price - value/lastprice) * size
 	}
 	return profit
