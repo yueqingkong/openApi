@@ -400,8 +400,8 @@ func (self *Coin) Chanel(pt conset.PLAT, symbol conset.SYMBOL, period conset.PER
 
 		for k, v := range coins {
 			if k == 0 {
-				low = v.Close
-				high = v.Close
+				low = v.Low
+				high = v.High
 			} else {
 				if v.Low < low {
 					low = v.Low
