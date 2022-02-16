@@ -15,7 +15,7 @@ type Account struct {
 
 func (self *Account) Inserts(pt conset.PLAT, symbol conset.SYMBOL) error {
 	self.Plat = dPlat(pt)
-	self.Symbol = dSymbol(symbol)
+	self.Symbol = SymbolToString(symbol)
 
 	_, err := Engine().InsertOne(self)
 	return err
@@ -23,7 +23,7 @@ func (self *Account) Inserts(pt conset.PLAT, symbol conset.SYMBOL) error {
 
 func (self *Account) Account(pt conset.PLAT, symbol conset.SYMBOL) error {
 	self.Plat = dPlat(pt)
-	self.Symbol = dSymbol(symbol)
+	self.Symbol = SymbolToString(symbol)
 
 	if b, err := Engine().Get(self); err != nil || !b {
 		return errors.New("get")

@@ -6,6 +6,7 @@ import (
 	"github.com/yueqingkong/openApi/util"
 	"log"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -34,24 +35,32 @@ func (self *Base) ccy(symbol conset.SYMBOL) string {
 
 func (self *Base) instId(symbol conset.SYMBOL, period conset.PERIOD) string {
 	var s string
+	s = self.Symbol(symbol)
+	s = strings.ReplaceAll(s, "_", "-")
+	s = strings.ToUpper(s)
+
 	switch period {
 	case conset.SPOT:
-		switch symbol {
-		case conset.BTC_USD, conset.BTC_USDT:
-			s = "BTC-USDT"
-		case conset.ETH_USD, conset.ETH_USDT:
-			s = "ETH-USDT"
-		}
+		//switch symbol {
+		//case conset.BTC_USD, conset.BTC_USDT:
+		//	s = "BTC-USDT"
+		//case conset.ETH_USD, conset.ETH_USDT:
+		//	s = "ETH-USDT"
+		//}
 	case conset.SWAP:
-		switch symbol {
-		case conset.BTC_USD:
-			s = "BTC-USD-SWAP"
-		case conset.BTC_USDT:
-			s = "BTC-USDT-SWAP"
-		case conset.ETH_USD:
-			s = "ETH-USD-SWAP"
-		case conset.ETH_USDT:
-			s = "ETH-USDT-SWAP"
+		//switch symbol {
+		//case conset.BTC_USD:
+		//	s = "BTC-USD-SWAP"
+		//case conset.BTC_USDT:
+		//	s = "BTC-USDT-SWAP"
+		//case conset.ETH_USD:
+		//	s = "ETH-USD-SWAP"
+		//case conset.ETH_USDT:
+		//	s = "ETH-USDT-SWAP"
+		//}
+
+		if s != "" {
+			s += "-SWAP"
 		}
 	case conset.WEEK:
 		switch symbol {
@@ -90,18 +99,18 @@ func (self *Base) Plat() conset.PLAT {
 }
 
 func (self *Base) Symbol(symbol conset.SYMBOL) string {
-	var s string
-	switch symbol {
-	case conset.BTC_USD:
-		s = "btc_usd"
-	case conset.BTC_USDT:
-		s = "btc_usdt"
-	case conset.ETH_USD:
-		s = "eth_usd"
-	case conset.ETH_USDT:
-		s = "eth_usdt"
-	}
-	return s
+	//var s string
+	//switch symbol {
+	//case conset.BTC_USD:
+	//	s = "btc_usd"
+	//case conset.BTC_USDT:
+	//	s = "btc_usdt"
+	//case conset.ETH_USD:
+	//	s = "eth_usd"
+	//case conset.ETH_USDT:
+	//	s = "eth_usdt"
+	//}
+	return db.SymbolToString(symbol)
 }
 
 func (self *Base) Period(period conset.PERIOD) string {

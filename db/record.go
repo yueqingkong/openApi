@@ -31,7 +31,7 @@ type Record struct {
 
 func (self *Record) Insert(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD) error {
 	self.Plat = dPlat(pt)
-	self.Symbol = dSymbol(symbol)
+	self.Symbol = SymbolToString(symbol)
 	self.Period = dPeriod(period)
 
 	_, err := Engine().InsertOne(self)
@@ -40,7 +40,7 @@ func (self *Record) Insert(pt conset.PLAT, symbol conset.SYMBOL, period conset.P
 
 func (self *Record) Last(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD) error {
 	self.Plat = dPlat(pt)
-	self.Symbol = dSymbol(symbol)
+	self.Symbol = SymbolToString(symbol)
 	self.Period = dPeriod(period)
 
 	if b, err := Engine().Desc("create_time").Get(self); err != nil || !b {

@@ -15,7 +15,7 @@ type AccountDay struct {
 
 func (self *AccountDay) Inserts(pt conset.PLAT, symbol conset.SYMBOL) error {
 	self.Plat = dPlat(pt)
-	self.Symbol = dSymbol(symbol)
+	self.Symbol = SymbolToString(symbol)
 
 	_, err := Engine().InsertOne(self)
 	return err

@@ -36,7 +36,7 @@ func dPlat(p conset.PLAT) string {
 	return s
 }
 
-func dSymbol(symbol conset.SYMBOL) string {
+func SymbolToString(symbol conset.SYMBOL) string {
 	var s string
 	switch symbol {
 	case conset.USD:
@@ -244,7 +244,7 @@ func dTimes(times conset.TIMES) string {
 func (self *Coin) Create(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD, times conset.TIMES, open, close, high, low, volume float32, timetamp int64) error {
 	coin := &Coin{
 		Plat:       dPlat(pt),
-		Symbol:     dSymbol(symbol),
+		Symbol:     SymbolToString(symbol),
 		Period:     dPeriod(period),
 		Times:      dTimes(times),
 		Open:       open,
@@ -263,7 +263,7 @@ func (self *Coin) Create(pt conset.PLAT, symbol conset.SYMBOL, period conset.PER
 func (self *Coin) LastTime(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD, times conset.TIMES) (bool, time.Time) {
 	var startTime time.Time
 
-	coin := &Coin{Plat: dPlat(pt), Symbol: dSymbol(symbol), Period: dPeriod(period), Times: dTimes(times)}
+	coin := &Coin{Plat: dPlat(pt), Symbol: SymbolToString(symbol), Period: dPeriod(period), Times: dTimes(times)}
 	if nil == coin.last() {
 		startTime = coin.CreateTime
 	}
@@ -325,7 +325,7 @@ func (self *Coin) All(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD
 	coins := make([]*Coin, 0)
 
 	sql, args, _ := builder.ToSQL(builder.Gte{"create_time": start})
-	if err := Engine().Where(sql, args...).Asc("create_time").Find(&coins, &Coin{Plat: dPlat(pt), Symbol: dSymbol(symbol), Period: dPeriod(period), Times: dTimes(times)}); err != nil {
+	if err := Engine().Where(sql, args...).Asc("create_time").Find(&coins, &Coin{Plat: dPlat(pt), Symbol: SymbolToString(symbol), Period: dPeriod(period), Times: dTimes(times)}); err != nil {
 		return nil, err
 	}
 
@@ -336,7 +336,7 @@ func (self *Coin) Lasts(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERI
 	coins := make([]Coin, 0)
 
 	sql, args, _ := builder.ToSQL(builder.Lt{"create_time": end})
-	if err := Engine().Where(sql, args...).Desc("create_time").Limit(limit).Find(&coins, &Coin{Plat: dPlat(pt), Symbol: dSymbol(symbol), Period: dPeriod(period), Times: dTimes(times)}); err != nil {
+	if err := Engine().Where(sql, args...).Desc("create_time").Limit(limit).Find(&coins, &Coin{Plat: dPlat(pt), Symbol: SymbolToString(symbol), Period: dPeriod(period), Times: dTimes(times)}); err != nil {
 		return nil, err
 	}
 
