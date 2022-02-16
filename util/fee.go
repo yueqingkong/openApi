@@ -35,14 +35,28 @@ func PayFee(price float32, size, value float32) float32 {
 	return value / price * size * 0.0005
 }
 
-// 收益
-// op 3 平多 4 平空
+// 币本位收益 反向合约
+// 多仓收益=面值*开仓张数（1／开仓价格-1／平仓价格）
+// 空仓收益=面值*开仓张数（1／平仓价格-1／开仓价格）
 func Profit(op conset.OPERATION, price float32, lastprice float32, size, value float32) float32 {
 	var profit float32
 	if op == conset.BUY_HIGH || op == conset.SELL_HIGH {
 		profit = (value/lastprice - value/price) * size
 	} else if op == conset.BUY_LOW || op == conset.SELL_LOW {
 		profit = (value/price - value/lastprice) * size
+	}
+	return profit
+}
+
+// USDT收益 正向合约
+// 做多：收益=（平仓价-开仓价）*面值*张数=（平仓价-开仓价）*数量
+// 做空：收益=（开仓价-平仓价）*面值*张数=（开仓价-平仓价）*数量
+func UsdtProfit(op conset.OPERATION, closePrice, openPrice float32, size, value float32) float32 {
+	var profit float32
+	if op == conset.BUY_HIGH || op == conset.SELL_HIGH {
+		profit = (closePrice - openPrice) * value * size
+	} else if op == conset.BUY_LOW || op == conset.SELL_LOW {
+		profit = (openPrice - closePrice) * value * size
 	}
 	return profit
 }
