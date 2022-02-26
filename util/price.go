@@ -3,11 +3,7 @@ package util
 // 价格相等 合理偏差 0.001
 // dest 目标价格
 func PriceEqual(dest float32, price float32) bool {
-	var b = false
-	if dest*(1-0.004) < price && dest*(1+0.004) > price {
-		b = true
-	}
-	return b
+	return Abs(dest-price)/dest < 0.005
 }
 
 // 价格趋势
