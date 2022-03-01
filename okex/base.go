@@ -251,7 +251,7 @@ func (self *Base) Orders(symbol conset.SYMBOL, period conset.PERIOD, direct cons
 
 // limit 成交价格
 func priceLimit(direct conset.OPERATION, price float32) float32 {
-	rate := float32(0.001)
+	rate := float32(0.005)
 	switch direct {
 	case conset.BUY_HIGH, conset.SELL_LOW:
 		price = price * (1.0 + rate)
