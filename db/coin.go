@@ -203,6 +203,173 @@ func SymbolToString(symbol conset.SYMBOL) string {
 	return s
 }
 
+func StringToSymbol(s string) conset.SYMBOL {
+	var symbol conset.SYMBOL
+	switch s {
+	case "usd":
+		symbol = conset.USD
+	case "usdt":
+		symbol = conset.USDT
+	case "btc_usd":
+		symbol = conset.BTC_USD
+	case "btc_usdt":
+		symbol = conset.BTC_USDT
+	case "eth_usd":
+		symbol = conset.ETH_USD
+	case "eth_usdt":
+		symbol = conset.ETH_USDT
+	case "ltc_usd":
+		symbol = conset.LTC_USD
+	case "ltc_usdt":
+		symbol = conset.LTC_USDT
+	case "dot_usd":
+		symbol = conset.DOT_USD
+	case "dot_usdt":
+		symbol = conset.DOT_USDT
+	case "doge_usd":
+		symbol = conset.DOGE_USD
+	case "doge_usdt":
+		symbol = conset.DOGE_USDT
+	case "luna_usd":
+		symbol = conset.LUNA_USD
+	case "luna_usdt":
+		symbol = conset.LUNA_USDT
+	case "toncoin_usd":
+		symbol = conset.TONCOIN_USD
+	case "toncoin_usdt":
+		symbol = conset.TONCOIN_USDT
+	case "shib_usd":
+		symbol = conset.SHIBI_USD
+	case "shib_usdt":
+		symbol = conset.SHIBI_USDT
+	case "matic_usd":
+		symbol = conset.MATIC_USD
+	case "matic_usdt":
+		symbol = conset.MATIC_USDT
+	case "cro_usd":
+		symbol = conset.CRO_USD
+	case "cro_usdt":
+		symbol = conset.CRO_USDT
+	case "bch_usd":
+		symbol = conset.BCH_USD
+	case "bch_usdt":
+		symbol = conset.BCH_USDT
+	case "ftm_usd":
+		symbol = conset.FTM_USD
+	case "ftm_usdt":
+		symbol = conset.FTM_USDT
+	case "xlm_usd":
+		symbol = conset.XLM_USD
+	case "xlm_usdt":
+		symbol = conset.XLM_USDT
+	case "axs_usd":
+		symbol = conset.AXS_USD
+	case "axs_usdt":
+		symbol = conset.AXS_USDT
+	case "one_usd":
+		symbol = conset.ONE_USD
+	case "one_usdt":
+		symbol = conset.ONE_USDT
+	case "near_usd":
+		symbol = conset.NEAR_USD
+	case "near_usdt":
+		symbol = conset.NEAR_USDT
+	case "icp_usd":
+		symbol = conset.ICP_USD
+	case "icp_usdt":
+		symbol = conset.ICP_USDT
+	case "leo_usd":
+		symbol = conset.LEO_USD
+	case "leo_usdt":
+		symbol = conset.LEO_USDT
+	case "iota_usd":
+		symbol = conset.IOTA_USD
+	case "iota_usdt":
+		symbol = conset.IOTA_USDT
+	case "ada_usd":
+		symbol = conset.ADA_USD
+	case "ada_usdt":
+		symbol = conset.ADA_USDT
+	case "fil_usd":
+		symbol = conset.FIL_USD
+	case "fil_usdt":
+		symbol = conset.FIL_USDT
+	case "atom_usd":
+		symbol = conset.ATOM_USD
+	case "atom_usdt":
+		symbol = conset.ATOM_USDT
+	case "xrp_usd":
+		symbol = conset.XRP_USD
+	case "xrp_usdt":
+		symbol = conset.XRP_USDT
+	case "link_usd":
+		symbol = conset.LINK_USD
+	case "link_usdt":
+		symbol = conset.LINK_USDT
+	case "eos_usd":
+		symbol = conset.EOS_USD
+	case "eos_usdt":
+		symbol = conset.EOS_USDT
+	case "uni_usd":
+		symbol = conset.UNI_USD
+	case "uni_usdt":
+		symbol = conset.UNI_USDT
+	case "crv_usd":
+		symbol = conset.CRV_USD
+	case "crv_usdt":
+		symbol = conset.CRV_USDT
+	case "theta_usd":
+		symbol = conset.THETA_USD
+	case "theta_usdt":
+		symbol = conset.THETA_USDT
+	case "algo_usd":
+		symbol = conset.ALGO_USD
+	case "algo_usdt":
+		symbol = conset.ALGO_USDT
+	case "etc_usd":
+		symbol = conset.ETC_USD
+	case "etc_usdt":
+		symbol = conset.ETC_USDT
+	case "sand_usd":
+		symbol = conset.SAND_USD
+	case "sand_usdt":
+		symbol = conset.SAND_USDT
+	case "sol_usd":
+		symbol = conset.SOL_USD
+	case "sol_usdt":
+		symbol = conset.SOL_USDT
+	case "xtz_usd":
+		symbol = conset.XTZ_USD
+	case "xtz_usdt":
+		symbol = conset.XTZ_USDT
+	case "dash_usd":
+		symbol = conset.DASH_USD
+	case "dash_usdt":
+		symbol = conset.DASH_USDT
+	case "trx_usd":
+		symbol = conset.TRX_USD
+	case "trx_usdt":
+		symbol = conset.TRX_USDT
+	case "xmr_usd":
+		symbol = conset.XMR_USD
+	case "xmr_usdt":
+		symbol = conset.XMR_USDT
+	case "mana_usd":
+		symbol = conset.MANA_USD
+	case "mana_usdt":
+		symbol = conset.MANA_USDT
+	case "sushi_usd":
+		symbol = conset.SUSHI_USD
+	case "sushi_usdt":
+		symbol = conset.SUSHI_USDT
+	case "zec_usd":
+		symbol = conset.ZEC_USD
+	case "zec_usdt":
+		symbol = conset.ZEC_USDT
+	}
+	return symbol
+}
+
 func dPeriod(period conset.PERIOD) string {
 	var s string
 	switch period {

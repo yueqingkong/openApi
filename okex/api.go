@@ -23,7 +23,7 @@ type Api struct {
 }
 
 // 初始化 Key
-func (self *Api) InitKeys(apikey, secretkey, passphrase string) {
+func (self *Api) InitApiKeys(apikey, secretkey, passphrase string) {
 	self.ApiKey = apikey
 	self.SecretKey = secretkey
 	self.Passphrase = passphrase

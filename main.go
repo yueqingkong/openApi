@@ -4,6 +4,6 @@ import (
 	"log"
 )
 
-func main()  {
+func main() {
 	log.Print("open api ...")
 }

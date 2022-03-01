@@ -12,12 +12,16 @@ import (
 
 type Base struct {
 	*Api
+	*Ws
 }
 
 func (self *Base) Init(strings []string) {
 	if len(strings) >= 3 {
 		self.Api = &Api{}
-		self.InitKeys(strings[0], strings[1], strings[2])
+		self.Ws = &Ws{}
+
+		self.InitApiKeys(strings[0], strings[1], strings[2])
+		self.InitWsKeys(strings[0], strings[1], strings[2])
 	}
 }
 
@@ -41,24 +45,7 @@ func (self *Base) instId(symbol conset.SYMBOL, period conset.PERIOD) string {
 
 	switch period {
 	case conset.SPOT:
-		//switch symbol {
-		//case conset.BTC_USD, conset.BTC_USDT:
-		//	s = "BTC-USDT"
-		//case conset.ETH_USD, conset.ETH_USDT:
-		//	s = "ETH-USDT"
-		//}
 	case conset.SWAP:
-		//switch symbol {
-		//case conset.BTC_USD:
-		//	s = "BTC-USD-SWAP"
-		//case conset.BTC_USDT:
-		//	s = "BTC-USDT-SWAP"
-		//case conset.ETH_USD:
-		//	s = "ETH-USD-SWAP"
-		//case conset.ETH_USDT:
-		//	s = "ETH-USDT-SWAP"
-		//}
-
 		if s != "" {
 			s += "-SWAP"
 		}
@@ -272,4 +259,13 @@ func priceLimit(direct conset.OPERATION, price float32) float32 {
 		price = price * (1.0 - rate)
 	}
 	return price
+}
+
+func (self *Base) SubscribeTickers(symbols []conset.SYMBOL, period conset.PERIOD, f func(conset.SYMBOL, float32)) {
+	instIds := make([]string, 0)
+	for _, symbol := range symbols {
+		instIds = append(instIds, self.instId(symbol, period))
+	}
+
+	self.WsTickers(instIds, f)
 }
