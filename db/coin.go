@@ -546,7 +546,30 @@ func (self *Coin) EMA(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD
 		for i := 0; i < len(coins); i++ {
 			c := coins[i]
 			if i == 0 {
-				value = c.EMA(pt, symbol, period, times, limit, c.CreateTime)
+				value = c.EMAStart(pt, symbol, period, times, limit, c.CreateTime)
+			} else {
+				value = c.Close*factors + value*(1.0-factors)
+			}
+		}
+
+		return value
+	}
+}
+
+func (self *Coin) EMAStart(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD, times conset.TIMES, limit int, end time.Time) float32 {
+	if coins, err := self.Lasts(pt, symbol, period, times, limit, end); err != nil {
+		return 0.0
+	} else {
+		log.Print(coins)
+
+		factors := 2.0 / (float32(limit) + 1.0)
+		log.Printf("factors : %f", factors)
+
+		var value float32
+		for i := 0; i < len(coins); i++ {
+			c := coins[i]
+			if i == 0 {
+				value = c.Close
 			} else {
 				value = c.Close*factors + value*(1.0-factors)
 			}
