@@ -544,11 +544,11 @@ func (self *Coin) EMA(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD
 
 		var value float32
 		for i := 0; i < len(coins); i++ {
-			coin := coins[i]
+			c := coins[i]
 			if i == 0 {
-				value = coin.Close
+				value = c.EMA(pt, symbol, period, times, limit, c.CreateTime)
 			} else {
-				value = coin.Close*factors + value*(1.0-factors)
+				value = c.Close*factors + value*(1.0-factors)
 			}
 		}
 
