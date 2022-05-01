@@ -34,7 +34,7 @@ func (self *Account) Account(pt conset.PLAT, symbol conset.SYMBOL) error {
 }
 
 func (self *Account) Update() error {
-	if _, err := Engine().Update(self, &Account{Id: self.Id}); err != nil {
+	if _, err := Engine().Cols("symbol", "used", "total").Update(self, &Account{Id: self.Id}); err != nil {
 		return err
 	}
 
