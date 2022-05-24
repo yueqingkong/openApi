@@ -23,6 +23,8 @@ type Coin struct {
 	Volume     float32   `xorm:"float"`
 	Timestamp  int64     `json:"time_stamp" xorm:"bigint time_stamp index unique(pl-time)"` // 毫秒
 	CreateTime time.Time `json:"create_time" xorm:"DATETIME create_time index(p-s-t-p-c)"`
+	CreatedAt  time.Time `xorm:"created"`
+	UpdatedAt  time.Time `xorm:"updated"`
 }
 
 func dPlat(p conset.PLAT) string {

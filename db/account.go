@@ -3,15 +3,18 @@ package db
 import (
 	"errors"
 	"github.com/yueqingkong/openApi/conset"
+	"time"
 	"xorm.io/builder"
 )
 
 type Account struct {
-	Id     int64
-	Plat   string  `xorm:"varchar(255)"` // 平台名称
-	Symbol string  `xorm:"varchar(255)"` // Token
-	Used   float32 `xorm:"float"`        // 总值
-	Total  float32 `xorm:"float"`        // 总值
+	Id        int64
+	Plat      string    `xorm:"varchar(255)"` // 平台名称
+	Symbol    string    `xorm:"varchar(255)"` // Token
+	Used      float32   `xorm:"float"`        // 总值
+	Total     float32   `xorm:"float"`        // 总值
+	CreatedAt time.Time `xorm:"created"`
+	UpdatedAt time.Time `xorm:"updated"`
 }
 
 func (self *Account) Inserts(pt conset.PLAT, symbol conset.SYMBOL) error {

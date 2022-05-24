@@ -12,6 +12,8 @@ type AccountDay struct {
 	Used       float32   `xorm:"float"`                                   // 总值
 	Total      float32   `xorm:"float"`                                   // 总值
 	CreateTime time.Time `json:"create_time" xorm:"create_time DateTime"` // 时间
+	CreatedAt  time.Time `xorm:"created"`
+	UpdatedAt  time.Time `xorm:"updated"`
 }
 
 func (self *AccountDay) Inserts(pt conset.PLAT, symbol conset.SYMBOL) error {
