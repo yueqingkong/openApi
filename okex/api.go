@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	okApi = "https://www.okx.com/"
+	okApi = "https://www.okx.com"
 )
 
 type Api struct {
