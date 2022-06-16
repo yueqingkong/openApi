@@ -31,19 +31,17 @@ type Record struct {
 	UpdatedAt     time.Time `xorm:"updated"`
 }
 
-func (self *Record) Insert(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD) error {
+func (self *Record) Insert(pt conset.PLAT, symbol conset.SYMBOL) error {
 	self.Plat = dPlat(pt)
 	self.Symbol = SymbolToString(symbol)
-	self.Period = dPeriod(period)
 
 	_, err := Engine().InsertOne(self)
 	return err
 }
 
-func (self *Record) Last(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD) error {
+func (self *Record) Last(pt conset.PLAT, symbol conset.SYMBOL) error {
 	self.Plat = dPlat(pt)
 	self.Symbol = SymbolToString(symbol)
-	self.Period = dPeriod(period)
 
 	if b, err := Engine().Desc("create_time").Get(self); err != nil || !b {
 		return errors.New("get")

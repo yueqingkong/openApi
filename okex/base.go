@@ -37,39 +37,12 @@ func (self *Base) ccy(symbol conset.SYMBOL) string {
 	return s
 }
 
-func (self *Base) instId(symbol conset.SYMBOL, period conset.PERIOD) string {
+func (self *Base) instId(symbol conset.SYMBOL) string {
 	var s string
 	s = self.Symbol(symbol)
 	s = strings.ReplaceAll(s, "_", "-")
 	s = strings.ToUpper(s)
-
-	switch period {
-	case conset.SPOT:
-	case conset.SWAP:
-		if s != "" {
-			s += "-SWAP"
-		}
-	case conset.WEEK:
-		switch symbol {
-		case conset.BTC_USD:
-
-		}
-	case conset.WEEK_NEXT:
-		switch symbol {
-		case conset.BTC_USD:
-
-		}
-	case conset.QUARTER:
-		switch symbol {
-		case conset.BTC_USD:
-
-		}
-	case conset.QUARTER_NEXT:
-		switch symbol {
-		case conset.BTC_USD:
-
-		}
-	}
+	s += "-SWAP"
 	return s
 }
 
@@ -151,38 +124,29 @@ func (self *Base) TdMode(period conset.PERIOD) string {
 	return s
 }
 
-func (self *Base) Side(period conset.PERIOD, direct conset.OPERATION) (string, string) {
+func (self *Base) Side(direct conset.OPERATION) (string, string) {
 	var side string
 	var posSide string
 
-	switch period {
-	case conset.SPOT:
-		if direct == conset.BUY_HIGH || direct == conset.SELL_HIGH {
-			side = conset.BUY
-		} else {
-			side = conset.SELL
-		}
-	case conset.SWAP:
-		switch direct {
-		case conset.BUY_HIGH:
-			side = conset.BUY
-			posSide = conset.LONG
-		case conset.BUY_LOW:
-			side = conset.SELL
-			posSide = conset.SHORT
-		case conset.SELL_HIGH:
-			side = conset.SELL
-			posSide = conset.LONG
-		case conset.SELL_LOW:
-			side = conset.BUY
-			posSide = conset.SHORT
-		}
+	switch direct {
+	case conset.BUY_HIGH:
+		side = conset.BUY
+		posSide = conset.LONG
+	case conset.BUY_LOW:
+		side = conset.SELL
+		posSide = conset.SHORT
+	case conset.SELL_HIGH:
+		side = conset.SELL
+		posSide = conset.LONG
+	case conset.SELL_LOW:
+		side = conset.BUY
+		posSide = conset.SHORT
 	}
 	return side, posSide
 }
 
-func (self *Base) Pull(symbol conset.SYMBOL, period conset.PERIOD, times conset.TIMES, start time.Time) bool {
-	candles := self.Candles(self.instId(symbol, period), self.Times(times), self.before(start))
+func (self *Base) Pull(symbol conset.SYMBOL, times conset.TIMES, start time.Time) bool {
+	candles := self.Candles(self.instId(symbol), self.Times(times), self.before(start))
 
 	if len(candles) == 0 {
 		log.Printf("Pull : 同步完成")
@@ -200,7 +164,7 @@ func (self *Base) Pull(symbol conset.SYMBOL, period conset.PERIOD, times conset.
 
 		if k != 0 { // 最近时间一条有效的K线不保存
 			coin := &db.Coin{}
-			if err := coin.Create(self.Plat(), symbol, period, times, float32(open), float32(close), float32(high), float32(low), float32(volume), timetamp); err != nil {
+			if err := coin.Create(self.Plat(), symbol, times, float32(open), float32(close), float32(high), float32(low), float32(volume), timetamp); err != nil {
 				log.Printf("Create err: %+v", err)
 			}
 		}
@@ -208,8 +172,8 @@ func (self *Base) Pull(symbol conset.SYMBOL, period conset.PERIOD, times conset.
 	return false
 }
 
-func (self *Base) Price(symbol conset.SYMBOL, period conset.PERIOD) float32 {
-	tickers := self.Ticker(self.instId(symbol, period))
+func (self *Base) Price(symbol conset.SYMBOL) float32 {
+	tickers := self.Ticker(self.instId(symbol))
 	if len(tickers) == 0 {
 		return 0.0
 	}
@@ -227,9 +191,9 @@ func (self *Base) Balance(symbol conset.SYMBOL) float32 {
 }
 
 func (self *Base) SetLeverage(symbol conset.SYMBOL, period conset.PERIOD, direct conset.OPERATION, level string) bool {
-	_, poside := self.Side(period, direct)
+	_, poside := self.Side(direct)
 
-	bs := self.setLeverage(self.instId(symbol, period), level, self.TdMode(period), poside)
+	bs := self.setLeverage(self.instId(symbol), level, self.TdMode(period), poside)
 	if len(bs) == 0 {
 		return false
 	}
@@ -238,10 +202,10 @@ func (self *Base) SetLeverage(symbol conset.SYMBOL, period conset.PERIOD, direct
 }
 
 func (self *Base) Orders(symbol conset.SYMBOL, period conset.PERIOD, direct conset.OPERATION, price, sz float32) bool {
-	side, poside := self.Side(period, direct)
+	side, poside := self.Side(direct)
 	price = priceLimit(direct, price)
 
-	orders := self.Order(self.instId(symbol, period), self.TdMode(period), side, poside, price, sz)
+	orders := self.Order(self.instId(symbol), self.TdMode(period), side, poside, price, sz)
 	if len(orders) == 0 {
 		return false
 	}
@@ -261,10 +225,10 @@ func priceLimit(direct conset.OPERATION, price float32) float32 {
 	return price
 }
 
-func (self *Base) SubscribeTickers(symbols []conset.SYMBOL, period conset.PERIOD, f func(conset.SYMBOL, float32)) {
+func (self *Base) SubscribeTickers(symbols []conset.SYMBOL, f func(conset.SYMBOL, float32)) {
 	instIds := make([]string, 0)
 	for _, symbol := range symbols {
-		instIds = append(instIds, self.instId(symbol, period))
+		instIds = append(instIds, self.instId(symbol))
 	}
 
 	self.WsTickers(instIds, f)

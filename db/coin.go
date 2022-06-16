@@ -372,25 +372,6 @@ func StringToSymbol(s string) conset.SYMBOL {
 	return symbol
 }
 
-func dPeriod(period conset.PERIOD) string {
-	var s string
-	switch period {
-	case conset.SPOT:
-		s = "spot"
-	case conset.SWAP:
-		s = "swap"
-	case conset.WEEK:
-		s = "week"
-	case conset.WEEK_NEXT:
-		s = "week_next"
-	case conset.QUARTER:
-		s = "quarter"
-	case conset.QUARTER_NEXT:
-		s = "quarter_next"
-	}
-	return s
-}
-
 func dTimes(times conset.TIMES) string {
 	var s string
 	switch times {
@@ -410,11 +391,10 @@ func dTimes(times conset.TIMES) string {
 	return s
 }
 
-func (self *Coin) Create(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD, times conset.TIMES, open, close, high, low, volume float32, timetamp int64) error {
+func (self *Coin) Create(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES, open, close, high, low, volume float32, timetamp int64) error {
 	coin := &Coin{
 		Plat:       dPlat(pt),
 		Symbol:     SymbolToString(symbol),
-		Period:     dPeriod(period),
 		Times:      dTimes(times),
 		Open:       open,
 		Close:      close,
@@ -429,10 +409,10 @@ func (self *Coin) Create(pt conset.PLAT, symbol conset.SYMBOL, period conset.PER
 	return err
 }
 
-func (self *Coin) LastTime(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD, times conset.TIMES) (bool, time.Time) {
+func (self *Coin) LastTime(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES) (bool, time.Time) {
 	var startTime time.Time
 
-	coin := &Coin{Plat: dPlat(pt), Symbol: SymbolToString(symbol), Period: dPeriod(period), Times: dTimes(times)}
+	coin := &Coin{Plat: dPlat(pt), Symbol: SymbolToString(symbol), Times: dTimes(times)}
 	if nil == coin.last() {
 		startTime = coin.CreateTime
 	}
@@ -490,22 +470,22 @@ func (self *Coin) last() error {
 	return nil
 }
 
-func (self *Coin) All(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD, times conset.TIMES, start time.Time) ([]*Coin, error) {
+func (self *Coin) All(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES, start time.Time) ([]*Coin, error) {
 	coins := make([]*Coin, 0)
 
 	sql, args, _ := builder.ToSQL(builder.Gte{"create_time": start})
-	if err := Engine().Where(sql, args...).Asc("create_time").Find(&coins, &Coin{Plat: dPlat(pt), Symbol: SymbolToString(symbol), Period: dPeriod(period), Times: dTimes(times)}); err != nil {
+	if err := Engine().Where(sql, args...).Asc("create_time").Find(&coins, &Coin{Plat: dPlat(pt), Symbol: SymbolToString(symbol), Times: dTimes(times)}); err != nil {
 		return nil, err
 	}
 
 	return coins, nil
 }
 
-func (self *Coin) Lasts(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD, times conset.TIMES, limit int, end time.Time) ([]Coin, error) {
+func (self *Coin) Lasts(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES, limit int, end time.Time) ([]Coin, error) {
 	coins := make([]Coin, 0)
 
 	sql, args, _ := builder.ToSQL(builder.Lt{"create_time": end})
-	if err := Engine().Where(sql, args...).Desc("create_time").Limit(limit).Find(&coins, &Coin{Plat: dPlat(pt), Symbol: SymbolToString(symbol), Period: dPeriod(period), Times: dTimes(times)}); err != nil {
+	if err := Engine().Where(sql, args...).Desc("create_time").Limit(limit).Find(&coins, &Coin{Plat: dPlat(pt), Symbol: SymbolToString(symbol), Times: dTimes(times)}); err != nil {
 		return nil, err
 	}
 
@@ -519,8 +499,8 @@ func (self *Coin) Lasts(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERI
 
 // 移动平均线
 // N日移动平均线=N日收市价之和/N
-func (self *Coin) MA(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD, times conset.TIMES, limit int, end time.Time) float32 {
-	if coins, err := self.Lasts(pt, symbol, period, times, limit, end); err != nil {
+func (self *Coin) MA(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES, limit int, end time.Time) float32 {
+	if coins, err := self.Lasts(pt, symbol, times, limit, end); err != nil {
 		return 0.0
 	} else {
 		var total float32
@@ -535,8 +515,8 @@ func (self *Coin) MA(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD,
 
 // 平滑移动平均线
 // EMA(12) = [2/(12+1)]*今日收盘价+[11/(12+1)]*作日EMA(12)
-func (self *Coin) EMA(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD, times conset.TIMES, limit int, end time.Time) float32 {
-	if coins, err := self.Lasts(pt, symbol, period, times, limit, end); err != nil {
+func (self *Coin) EMA(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES, limit int, end time.Time) float32 {
+	if coins, err := self.Lasts(pt, symbol, times, limit, end); err != nil {
 		return 0.0
 	} else {
 		log.Print(coins)
@@ -548,7 +528,7 @@ func (self *Coin) EMA(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD
 		for i := 0; i < len(coins); i++ {
 			c := coins[i]
 			if i == 0 {
-				value = c.EMAStart(pt, symbol, period, times, limit, c.CreateTime)
+				value = c.EMAStart(pt, symbol, times, limit, c.CreateTime)
 			} else {
 				value = c.Close*factors + value*(1.0-factors)
 			}
@@ -558,8 +538,8 @@ func (self *Coin) EMA(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD
 	}
 }
 
-func (self *Coin) EMAStart(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD, times conset.TIMES, limit int, end time.Time) float32 {
-	if coins, err := self.Lasts(pt, symbol, period, times, limit, end); err != nil {
+func (self *Coin) EMAStart(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES, limit int, end time.Time) float32 {
+	if coins, err := self.Lasts(pt, symbol, times, limit, end); err != nil {
 		return 0.0
 	} else {
 		log.Print(coins)
@@ -583,8 +563,8 @@ func (self *Coin) EMAStart(pt conset.PLAT, symbol conset.SYMBOL, period conset.P
 
 // 通道
 // N日移动平均线=N日收市价之和/N
-func (self *Coin) Chanel(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD, times conset.TIMES, limit int, end time.Time) (float32, float32) {
-	if coins, err := self.Lasts(pt, symbol, period, times, limit, end); err != nil {
+func (self *Coin) Chanel(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES, limit int, end time.Time) (float32, float32) {
+	if coins, err := self.Lasts(pt, symbol, times, limit, end); err != nil {
 		return 0.0, 0.0
 	} else {
 		var low float32
@@ -612,8 +592,8 @@ func (self *Coin) Chanel(pt conset.PLAT, symbol conset.SYMBOL, period conset.PER
 //  1、当前交易日的最高价与最低价间的波幅
 //  2、前一交易日收盘价与当个交易日最高价间的波幅
 //  3、前一交易日收盘价与当个交易日最低价间的波幅
-func (self *Coin) ATR(pt conset.PLAT, symbol conset.SYMBOL, period conset.PERIOD, times conset.TIMES, limit int, end time.Time) float32 {
-	if coins, err := self.Lasts(pt, symbol, period, times, limit, end); err != nil {
+func (self *Coin) ATR(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES, limit int, end time.Time) float32 {
+	if coins, err := self.Lasts(pt, symbol, times, limit, end); err != nil {
 		return 0.0
 	} else {
 		var totalRange float32
