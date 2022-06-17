@@ -12,17 +12,16 @@ import (
 // Coin K线数据
 type Coin struct {
 	Id         int64
-	Plat       string    `xorm:"plat varchar(255) unique(pl-time) index(pl-sy-t) index(p-s-t-p-c)"`
-	Symbol     string    `xorm:"symbol varchar(255) unique(pl-time) index(pl-sy-t) index(p-s-t-p-c)"`
-	Times      string    `xorm:"times varchar(255) unique(pl-time) index(pl-sy-t) index(p-s-t-p-c)"`         // 时间间隔
-	Period     string    `json:"period" xorm:"varchar(255) unique(pl-time) index(pl-sy-t) index(p-s-t-p-c)"` // 合约类型 spot,week
+	Plat       string    `xorm:"plat varchar(255) unique(pl-time) index(pl-sy-t) index(p-s-t-c)"`
+	Symbol     string    `xorm:"symbol varchar(255) unique(pl-time) index(pl-sy-t) index(p-s-t-c)"`
+	Times      string    `xorm:"times varchar(255) unique(pl-time) index(pl-sy-t) index(p-s-t-c)"`         // 时间间隔
 	Open       float32   `xorm:"float"`
 	Close      float32   `xorm:"float"`
 	High       float32   `xorm:"float"`
 	Low        float32   `xorm:"float"`
 	Volume     float32   `xorm:"float"`
 	Timestamp  int64     `json:"time_stamp" xorm:"bigint time_stamp index unique(pl-time)"` // 毫秒
-	CreateTime time.Time `json:"create_time" xorm:"DATETIME create_time index(p-s-t-p-c)"`
+	CreateTime time.Time `json:"create_time" xorm:"DATETIME create_time index(p-s-t-c)"`
 	CreatedAt  time.Time `xorm:"created"`
 	UpdatedAt  time.Time `xorm:"updated"`
 }
