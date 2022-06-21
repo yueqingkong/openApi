@@ -14,7 +14,7 @@ type Coin struct {
 	Id         int64
 	Plat       string    `xorm:"plat varchar(255) unique(pl-time) index(pl-sy-t) index(p-s-t-c)"`
 	Symbol     string    `xorm:"symbol varchar(255) unique(pl-time) index(pl-sy-t) index(p-s-t-c)"`
-	Times      string    `xorm:"times varchar(255) unique(pl-time) index(pl-sy-t) index(p-s-t-c)"`         // 时间间隔
+	Times      string    `xorm:"times varchar(255) unique(pl-time) index(pl-sy-t) index(p-s-t-c)"` // 时间间隔
 	Open       float32   `xorm:"float"`
 	Close      float32   `xorm:"float"`
 	High       float32   `xorm:"float"`
@@ -200,6 +200,42 @@ func SymbolToString(symbol conset.SYMBOL) string {
 		s = "zec_usd"
 	case conset.ZEC_USDT:
 		s = "zec_usdt"
+	case conset.SNX_USD:
+		s = "snx_usd"
+	case conset.SNX_USDT:
+		s = "snx_usdt"
+	case conset.AVAX_USD:
+		s = "avax_usd"
+	case conset.AVAX_USDT:
+		s = "avax_usdt"
+	case conset.WAVES_USD:
+		s = "waves_usd"
+	case conset.WAVES_USDT:
+		s = "waves_usdt"
+	case conset.AAVE_USD:
+		s = "aave_usd"
+	case conset.AAVE_USDT:
+		s = "aave_usdt"
+	case conset.BSV_USD:
+		s = "bsv_usd"
+	case conset.BSV_USDT:
+		s = "bsv_usdt"
+	case conset.XCH_USD:
+		s = "xch_usd"
+	case conset.XCH_USDT:
+		s = "xch_usdt"
+	case conset.ENS_USD:
+		s = "ens_usd"
+	case conset.ENS_USDT:
+		s = "ens_usdt"
+	case conset.COMP_USD:
+		s = "comp_usd"
+	case conset.COMP_USDT:
+		s = "comp_usdt"
+	case conset.EGLD_USD:
+		s = "egld_usd"
+	case conset.EGLD_USDT:
+		s = "egld_usdt"
 	}
 	return s
 }
@@ -367,6 +403,42 @@ func StringToSymbol(s string) conset.SYMBOL {
 		symbol = conset.ZEC_USD
 	case "zec_usdt":
 		symbol = conset.ZEC_USDT
+	case "snx_usd":
+		symbol = conset.SNX_USD
+	case "snx_usdt":
+		symbol = conset.SNX_USDT
+	case "avax_usd":
+		symbol = conset.AVAX_USD
+	case "avax_usdt":
+		symbol = conset.AVAX_USDT
+	case "waves_usd":
+		symbol = conset.WAVES_USD
+	case "waves_usdt":
+		symbol = conset.WAVES_USDT
+	case "aave_usd":
+		symbol = conset.AAVE_USD
+	case "aave_usdt":
+		symbol = conset.AAVE_USDT
+	case "bsv_usd":
+		symbol = conset.BSV_USD
+	case "bsv_usdt":
+		symbol = conset.BSV_USDT
+	case "xch_usd":
+		symbol = conset.XCH_USD
+	case "xch_usdt":
+		symbol = conset.XCH_USDT
+	case "ens_usd":
+		symbol = conset.ENS_USD
+	case "ens_usdt":
+		symbol = conset.ENS_USDT
+	case "comp_usd":
+		symbol = conset.COMP_USD
+	case "comp_usdt":
+		symbol = conset.COMP_USDT
+	case "egld_usd":
+		symbol = conset.EGLD_USD
+	case "egld_usdt":
+		symbol = conset.EGLD_USDT
 	}
 	return symbol
 }
