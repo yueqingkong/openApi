@@ -29,7 +29,7 @@ func Get(url string, headers map[string]string, inter interface{}) error {
 	} else {
 		data := &Response{}
 
-		// log.Printf("Get Body %s", string(resp.Body()))
+		log.Printf("Get Body %s", string(resp.Body()))
 		if err = json.Unmarshal(resp.Body(), data); err != nil {
 			log.Printf("Get err: %v", err)
 		} else {

@@ -121,3 +121,8 @@ type SetLeverage struct {
 	InstID  string `json:"instId"`
 	PosSide string `json:"posSide"`
 }
+
+type UsdCny struct {
+	UsdCny string `json:"usdCny"`
+}
+

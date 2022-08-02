@@ -181,6 +181,15 @@ func (self *Base) Price(symbol conset.SYMBOL) float32 {
 	return util.Float32(tickers[0].Last)
 }
 
+func (self *Base) UsdCny() float32 {
+	rates := self.ExchangeRate()
+	if len(rates) == 0 {
+		return 0.0
+	}
+
+	return util.Float32(rates[0].UsdCny)
+}
+
 func (self *Base) Balance(symbol conset.SYMBOL) float32 {
 	bs := self.balance(self.ccy(symbol))
 	if len(bs) == 0 {

@@ -156,6 +156,17 @@ func (self *Api) EstimatedPrice(instId string) []*EstimatedPrice {
 	return inst
 }
 
+// 获取法币汇率
+// 该接口提供的是2周的平均汇率数据
+func (self *Api) ExchangeRate() []*UsdCny {
+	api := "/api/v5/market/exchange-rate"
+
+	var url = okApi + api
+	inst := make([]*UsdCny, 0)
+	plat.Get(url, nil, &inst)
+	return inst
+}
+
 // 获取所有交易产品K线数据
 // 获取K线数据。K线数据按请求的粒度分组返回，K线数据每个粒度最多可获取最近1440条。
 // bar [1m/3m/5m/15m/30m/1H/2H/4H/6H/12H/1D/1W/1M/3M/6M/1Y]
