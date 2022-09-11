@@ -26,6 +26,7 @@ type Record struct {
 	Profit        float32   `xorm:"float"`                                         // 收益
 	ProfitRate    float32   `xorm:"float"`                                         // 收益率(百分比 %)
 	TotalRate     float32   `xorm:"float"`                                         // 总收益率(百分比 %)
+	Status        int32     `xorm:"status"`                                        // 状态
 	CreateTime    time.Time `json:"create_time" xorm:"create_time DateTime index"` // 时间
 	CreatedAt     time.Time `xorm:"created"`
 	UpdatedAt     time.Time `xorm:"updated"`
