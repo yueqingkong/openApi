@@ -10,9 +10,10 @@ import (
 // Record 交易记录
 type Record struct {
 	Id            int64
-	Plat          string    `xorm:"varchar(255) plat index(plat-symbol-period)"`   // 平台名称
-	Symbol        string    `xorm:"varchar(255) symbol index(plat-symbol-period)"` // Token
-	Period        string    `xorm:"varchar(255) period index(plat-symbol-period)"` // 周期 spot|week|quarter
+	Name          string    `xorm:"varchar(255) name index(name-symbol-period)"`   // 策略
+	Plat          string    `xorm:"varchar(255) plat"`                             // 平台名称
+	Symbol        string    `xorm:"varchar(255) symbol index(name-symbol-period)"` // Token
+	Period        string    `xorm:"varchar(255) period index(name-symbol-period)"` // 周期 spot|week|quarter
 	Operation     int32     `xorm:"int"`                                           // 1: 开多 2: 开空 3: 平仓
 	Position      int32     `xorm:"int"`                                           // 加仓层数
 	Price         float32   `xorm:"float"`                                         // 当前价格
