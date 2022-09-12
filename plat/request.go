@@ -62,7 +62,7 @@ func Post(url string, headers map[string]string, params interface{}, inter inter
 	} else {
 		data := &Response{}
 
-		// log.Printf("Post Bodyody %s", string(resp.Body()))
+		log.Printf("Post Bodyody %s", string(resp.Body()))
 		if err = json.Unmarshal(resp.Body(), data); err != nil {
 			log.Printf("Post err: %v", err)
 		} else {
