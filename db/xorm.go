@@ -26,7 +26,8 @@ func ConnectSQL(name, user, host, port, password string) {
 	// 本地时区
 	//engine.DatabaseTZ = time.Local // 必须
 	//engine.TZLocation = time.Local // 必须
-	err = engine.Sync2(new(Coin), new(Account), new(Record), new(AccountDay), new(Index))
+	err = engine.Sync2(new(Coin), new(Account), new(Record),
+		new(AccountDay), new(Indexs))
 	if err != nil {
 		log.Fatal("[MySql] 同步表失败", err)
 	}
