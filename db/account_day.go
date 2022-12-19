@@ -7,9 +7,9 @@ import (
 
 type AccountDay struct {
 	Id         int64
-	Name       string    `xorm:"varchar(255) unique(n-p-s)"`              // 名称
-	Plat       string    `xorm:"varchar(255) unique(n-p-s)"`              // 平台名称
-	Symbol     string    `xorm:"varchar(255) unique(n-p-s)"`              // Token
+	Name       string    `xorm:"varchar(255)"`                            // 名称
+	Plat       string    `xorm:"varchar(255)"`                            // 平台名称
+	Symbol     string    `xorm:"varchar(255)"`                            // Token
 	Used       float32   `xorm:"float"`                                   // 总值
 	Total      float32   `xorm:"float"`                                   // 总值
 	CreateTime time.Time `json:"create_time" xorm:"create_time DateTime"` // 时间
