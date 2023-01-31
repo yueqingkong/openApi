@@ -1,129 +1,90 @@
 package conset
 
 type PLAT int32
-type SYMBOL int32
 type PERIOD int32
 type TIMES int32
 type OPERATION int32
+type CCY int32
 
 const (
-	OKEX PLAT = iota + 3
+	_ = iota
+	ENABLE
+	DISABLE
+)
+
+const (
+	OKEX PLAT = iota
 	QKL123
 )
 
 const (
-	BTC_USD SYMBOL = iota + 10
+	_ CCY = iota
 	USD
 	USDT
-	BTC_USDT
-	ETH_USD
-	ETH_USDT
-	LTC_USD
-	LTC_USDT
-	DOT_USD
-	DOT_USDT
-	DOGE_USD
-	DOGE_USDT
-	ADA_USD
-	ADA_USDT
-	FIL_USD
-	FIL_USDT
-	ATOM_USD
-	ATOM_USDT
-	XRP_USD
-	XRP_USDT
-	LINK_USD
-	LINK_USDT
-	EOS_USD
-	EOS_USDT
-	UNI_USD
-	UNI_USDT
-	CRV_USD
-	CRV_USDT
-	THETA_USD
-	THETA_USDT
-	ALGO_USD
-	ALGO_USDT
-	ETC_USD
-	ETC_USDT
-	SAND_USD
-	SAND_USDT
-	SOL_USD
-	SOL_USDT
-	XTZ_USD
-	XTZ_USDT
-	DASH_USD
-	DASH_USDT
-	TRX_USD
-	TRX_USDT
-	XMR_USD
-	XMR_USDT
-	MANA_USD
-	MANA_USDT
-	SUSHI_USD
-	SUSHI_USDT
-	ZEC_USD
-	ZEC_USDT
-	LUNA_USD
-	LUNA_USDT
-	TONCOIN_USD
-	TONCOIN_USDT
-	SHIBI_USD
-	SHIBI_USDT
-	MATIC_USD
-	MATIC_USDT
-	CRO_USD
-	CRO_USDT
-	BCH_USD
-	BCH_USDT
-	FTM_USD
-	FTM_USDT
-	XLM_USD
-	XLM_USDT
-	AXS_USD
-	AXS_USDT
-	ONE_USD
-	ONE_USDT
-	NEAR_USD
-	NEAR_USDT
-	ICP_USD
-	ICP_USDT
-	LEO_USD
-	LEO_USDT
-	IOTA_USD
-	IOTA_USDT
-	SNX_USD
-	SNX_USDT
-	AVAX_USD
-	AVAX_USDT
-	WAVES_USD
-	WAVES_USDT
-	AAVE_USD
-	AAVE_USDT
-	BSV_USD
-	BSV_USDT
-	XCH_USD
-	XCH_USDT
-	ENS_USD
-	ENS_USDT
-	COMP_USD
-	COMP_USDT
-	EGLD_USD
-	EGLD_USDT
+	BTC
+	ETH
+	LTC
+	DOT
+	DOGE
+	ADA
+	FIL
+	ATOM
+	XRP
+	LINK
+	EOS
+	UNI
+	CRV
+	THETA
+	ALGO
+	ETC
+	SAND
+	SOL
+	XTZ
+	DASH
+	TRX
+	XMR
+	MANA
+	SUSHI
+	ZEC
+	LUNA
+	TONCOIN
+	SHIBI
+	MATIC
+	CRO
+	BCH
+	FTM
+	XLM
+	AXS
+	ONE
+	NEAR
+	ICP
+	LEO
+	IOTA
+	SNX
+	AVAX
+	WAVES
+	AAVE
+	BSV
+	XCH
+	ENS
+	COMP
+	EGLD
 )
 
 // 交易类型
 const (
-	SPOT         PERIOD = iota + 100 // 现货
-	SWAP                             // 永续
-	WEEK                             // 当周
-	WEEK_NEXT                        // 次周
-	QUARTER                          // 当季
-	QUARTER_NEXT                     // 次季
+	_            PERIOD = iota
+	SPOT                // 现货
+	SWAP                // 永续
+	WEEK                // 当周
+	WEEK_NEXT           // 次周
+	QUARTER             // 当季
+	QUARTER_NEXT        // 次季
 )
 
 const (
-	MIN_5 TIMES = iota + 200 // 5min
+	_     TIMES = iota
+	MIN_5       // 5min
 	MIN_15
 	MIN_30
 	H_1

@@ -10,7 +10,7 @@ import (
 type BasePlat interface {
 	Inits(...string) // 初始化 apikey...
 
-	Pull(symbol conset.SYMBOL, times conset.TIMES, start time.Time) []db.Coin                    // 同步Kline
-	Price(symbol conset.SYMBOL) float32                                                          // 当前价格
-	Orders(symbol conset.SYMBOL, operation conset.OPERATION, price float32, amount float32) bool // 交易
+	Pull(base conset.CCY, quote conset.CCY, times conset.TIMES, start time.Time) []db.Coin                    // 同步Kline
+	Price(base conset.CCY, quote conset.CCY) float32                                                          // 当前价格
+	Orders(base conset.CCY, quote conset.CCY, operation conset.OPERATION, price float32, amount float32) bool // 交易
 }

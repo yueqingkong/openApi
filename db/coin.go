@@ -2,6 +2,7 @@ package db
 
 import (
 	"errors"
+	"fmt"
 	"github.com/yueqingkong/openApi/conset"
 	"github.com/yueqingkong/openApi/util"
 	"log"
@@ -26,7 +27,19 @@ type Coin struct {
 	UpdatedAt  time.Time `xorm:"updated"`
 }
 
-func dPlat(p conset.PLAT) string {
+var (
+	ccyMap = map[conset.CCY]string{conset.USD: "usd", conset.USDT: "usdt", // 稳定币
+		conset.BTC: "btc", conset.ETH: "eth", conset.LTC: "ltc", conset.DOT: "dot", conset.DOGE: "doge",
+		conset.LUNA: "luna", conset.TONCOIN: "toncoin", conset.SHIBI: "shib", conset.MATIC: "matic", conset.CRO: "cro", conset.BCH: "bch", conset.FTM: "ftm",
+		conset.XLM: "xlm", conset.AXS: "axs", conset.ONE: "one", conset.NEAR: "near", conset.ICP: "icp", conset.LEO: "leo", conset.IOTA: "iota",
+		conset.ADA: "ada", conset.FIL: "fil", conset.ATOM: "atom", conset.XRP: "xrp", conset.LINK: "link", conset.EOS: "eos", conset.UNI: "uni",
+		conset.CRV: "crv", conset.THETA: "theta", conset.ALGO: "algo", conset.ETC: "etc", conset.SAND: "sand", conset.SOL: "sol", conset.XTZ: "xtz",
+		conset.DASH: "dash", conset.TRX: "trx", conset.XMR: "xmr", conset.MANA: "mana", conset.SUSHI: "sushi", conset.ZEC: "zec", conset.SNX: "snx",
+		conset.AVAX: "avax", conset.WAVES: "waves", conset.AAVE: "aave", conset.BSV: "bsv", conset.XCH: "xch", conset.ENS: "ens", conset.COMP: "comp",
+		conset.EGLD: "egld"}
+)
+
+func Plat(p conset.PLAT) string {
 	var s string
 	switch p {
 	case conset.OKEX:
@@ -37,413 +50,7 @@ func dPlat(p conset.PLAT) string {
 	return s
 }
 
-func SymbolToString(symbol conset.SYMBOL) string {
-	var s string
-	switch symbol {
-	case conset.USD:
-		s = "usd"
-	case conset.USDT:
-		s = "usdt"
-	case conset.BTC_USD:
-		s = "btc_usd"
-	case conset.BTC_USDT:
-		s = "btc_usdt"
-	case conset.ETH_USD:
-		s = "eth_usd"
-	case conset.ETH_USDT:
-		s = "eth_usdt"
-	case conset.LTC_USD:
-		s = "ltc_usd"
-	case conset.LTC_USDT:
-		s = "ltc_usdt"
-	case conset.DOT_USD:
-		s = "dot_usd"
-	case conset.DOT_USDT:
-		s = "dot_usdt"
-	case conset.DOGE_USD:
-		s = "doge_usd"
-	case conset.DOGE_USDT:
-		s = "doge_usdt"
-	case conset.LUNA_USD:
-		s = "luna_usd"
-	case conset.LUNA_USDT:
-		s = "luna_usdt"
-	case conset.TONCOIN_USD:
-		s = "toncoin_usd"
-	case conset.TONCOIN_USDT:
-		s = "toncoin_usdt"
-	case conset.SHIBI_USD:
-		s = "shib_usd"
-	case conset.SHIBI_USDT:
-		s = "shib_usdt"
-	case conset.MATIC_USD:
-		s = "matic_usd"
-	case conset.MATIC_USDT:
-		s = "matic_usdt"
-	case conset.CRO_USD:
-		s = "cro_usd"
-	case conset.CRO_USDT:
-		s = "cro_usdt"
-	case conset.BCH_USD:
-		s = "bch_usd"
-	case conset.BCH_USDT:
-		s = "bch_usdt"
-	case conset.FTM_USD:
-		s = "ftm_usd"
-	case conset.FTM_USDT:
-		s = "ftm_usdt"
-	case conset.XLM_USD:
-		s = "xlm_usd"
-	case conset.XLM_USDT:
-		s = "xlm_usdt"
-	case conset.AXS_USD:
-		s = "axs_usd"
-	case conset.AXS_USDT:
-		s = "axs_usdt"
-	case conset.ONE_USD:
-		s = "one_usd"
-	case conset.ONE_USDT:
-		s = "one_usdt"
-	case conset.NEAR_USD:
-		s = "near_usd"
-	case conset.NEAR_USDT:
-		s = "near_usdt"
-	case conset.ICP_USD:
-		s = "icp_usd"
-	case conset.ICP_USDT:
-		s = "icp_usdt"
-	case conset.LEO_USD:
-		s = "leo_usd"
-	case conset.LEO_USDT:
-		s = "leo_usdt"
-	case conset.IOTA_USD:
-		s = "iota_usd"
-	case conset.IOTA_USDT:
-		s = "iota_usdt"
-	case conset.ADA_USD:
-		s = "ada_usd"
-	case conset.ADA_USDT:
-		s = "ada_usdt"
-	case conset.FIL_USD:
-		s = "fil_usd"
-	case conset.FIL_USDT:
-		s = "fil_usdt"
-	case conset.ATOM_USD:
-		s = "atom_usd"
-	case conset.ATOM_USDT:
-		s = "atom_usdt"
-	case conset.XRP_USD:
-		s = "xrp_usd"
-	case conset.XRP_USDT:
-		s = "xrp_usdt"
-	case conset.LINK_USD:
-		s = "link_usd"
-	case conset.LINK_USDT:
-		s = "link_usdt"
-	case conset.EOS_USD:
-		s = "eos_usd"
-	case conset.EOS_USDT:
-		s = "eos_usdt"
-	case conset.UNI_USD:
-		s = "uni_usd"
-	case conset.UNI_USDT:
-		s = "uni_usdt"
-	case conset.CRV_USD:
-		s = "crv_usd"
-	case conset.CRV_USDT:
-		s = "crv_usdt"
-	case conset.THETA_USD:
-		s = "theta_usd"
-	case conset.THETA_USDT:
-		s = "theta_usdt"
-	case conset.ALGO_USD:
-		s = "algo_usd"
-	case conset.ALGO_USDT:
-		s = "algo_usdt"
-	case conset.ETC_USD:
-		s = "etc_usd"
-	case conset.ETC_USDT:
-		s = "etc_usdt"
-	case conset.SAND_USD:
-		s = "sand_usd"
-	case conset.SAND_USDT:
-		s = "sand_usdt"
-	case conset.SOL_USD:
-		s = "sol_usd"
-	case conset.SOL_USDT:
-		s = "sol_usdt"
-	case conset.XTZ_USD:
-		s = "xtz_usd"
-	case conset.XTZ_USDT:
-		s = "xtz_usdt"
-	case conset.DASH_USD:
-		s = "dash_usd"
-	case conset.DASH_USDT:
-		s = "dash_usdt"
-	case conset.TRX_USD:
-		s = "trx_usd"
-	case conset.TRX_USDT:
-		s = "trx_usdt"
-	case conset.XMR_USD:
-		s = "xmr_usd"
-	case conset.XMR_USDT:
-		s = "xmr_usdt"
-	case conset.MANA_USD:
-		s = "mana_usd"
-	case conset.MANA_USDT:
-		s = "mana_usdt"
-	case conset.SUSHI_USD:
-		s = "sushi_usd"
-	case conset.SUSHI_USDT:
-		s = "sushi_usdt"
-	case conset.ZEC_USD:
-		s = "zec_usd"
-	case conset.ZEC_USDT:
-		s = "zec_usdt"
-	case conset.SNX_USD:
-		s = "snx_usd"
-	case conset.SNX_USDT:
-		s = "snx_usdt"
-	case conset.AVAX_USD:
-		s = "avax_usd"
-	case conset.AVAX_USDT:
-		s = "avax_usdt"
-	case conset.WAVES_USD:
-		s = "waves_usd"
-	case conset.WAVES_USDT:
-		s = "waves_usdt"
-	case conset.AAVE_USD:
-		s = "aave_usd"
-	case conset.AAVE_USDT:
-		s = "aave_usdt"
-	case conset.BSV_USD:
-		s = "bsv_usd"
-	case conset.BSV_USDT:
-		s = "bsv_usdt"
-	case conset.XCH_USD:
-		s = "xch_usd"
-	case conset.XCH_USDT:
-		s = "xch_usdt"
-	case conset.ENS_USD:
-		s = "ens_usd"
-	case conset.ENS_USDT:
-		s = "ens_usdt"
-	case conset.COMP_USD:
-		s = "comp_usd"
-	case conset.COMP_USDT:
-		s = "comp_usdt"
-	case conset.EGLD_USD:
-		s = "egld_usd"
-	case conset.EGLD_USDT:
-		s = "egld_usdt"
-	}
-	return s
-}
-
-func StringToSymbol(s string) conset.SYMBOL {
-	var symbol conset.SYMBOL
-	switch s {
-	case "usd":
-		symbol = conset.USD
-	case "usdt":
-		symbol = conset.USDT
-	case "btc_usd":
-		symbol = conset.BTC_USD
-	case "btc_usdt":
-		symbol = conset.BTC_USDT
-	case "eth_usd":
-		symbol = conset.ETH_USD
-	case "eth_usdt":
-		symbol = conset.ETH_USDT
-	case "ltc_usd":
-		symbol = conset.LTC_USD
-	case "ltc_usdt":
-		symbol = conset.LTC_USDT
-	case "dot_usd":
-		symbol = conset.DOT_USD
-	case "dot_usdt":
-		symbol = conset.DOT_USDT
-	case "doge_usd":
-		symbol = conset.DOGE_USD
-	case "doge_usdt":
-		symbol = conset.DOGE_USDT
-	case "luna_usd":
-		symbol = conset.LUNA_USD
-	case "luna_usdt":
-		symbol = conset.LUNA_USDT
-	case "toncoin_usd":
-		symbol = conset.TONCOIN_USD
-	case "toncoin_usdt":
-		symbol = conset.TONCOIN_USDT
-	case "shib_usd":
-		symbol = conset.SHIBI_USD
-	case "shib_usdt":
-		symbol = conset.SHIBI_USDT
-	case "matic_usd":
-		symbol = conset.MATIC_USD
-	case "matic_usdt":
-		symbol = conset.MATIC_USDT
-	case "cro_usd":
-		symbol = conset.CRO_USD
-	case "cro_usdt":
-		symbol = conset.CRO_USDT
-	case "bch_usd":
-		symbol = conset.BCH_USD
-	case "bch_usdt":
-		symbol = conset.BCH_USDT
-	case "ftm_usd":
-		symbol = conset.FTM_USD
-	case "ftm_usdt":
-		symbol = conset.FTM_USDT
-	case "xlm_usd":
-		symbol = conset.XLM_USD
-	case "xlm_usdt":
-		symbol = conset.XLM_USDT
-	case "axs_usd":
-		symbol = conset.AXS_USD
-	case "axs_usdt":
-		symbol = conset.AXS_USDT
-	case "one_usd":
-		symbol = conset.ONE_USD
-	case "one_usdt":
-		symbol = conset.ONE_USDT
-	case "near_usd":
-		symbol = conset.NEAR_USD
-	case "near_usdt":
-		symbol = conset.NEAR_USDT
-	case "icp_usd":
-		symbol = conset.ICP_USD
-	case "icp_usdt":
-		symbol = conset.ICP_USDT
-	case "leo_usd":
-		symbol = conset.LEO_USD
-	case "leo_usdt":
-		symbol = conset.LEO_USDT
-	case "iota_usd":
-		symbol = conset.IOTA_USD
-	case "iota_usdt":
-		symbol = conset.IOTA_USDT
-	case "ada_usd":
-		symbol = conset.ADA_USD
-	case "ada_usdt":
-		symbol = conset.ADA_USDT
-	case "fil_usd":
-		symbol = conset.FIL_USD
-	case "fil_usdt":
-		symbol = conset.FIL_USDT
-	case "atom_usd":
-		symbol = conset.ATOM_USD
-	case "atom_usdt":
-		symbol = conset.ATOM_USDT
-	case "xrp_usd":
-		symbol = conset.XRP_USD
-	case "xrp_usdt":
-		symbol = conset.XRP_USDT
-	case "link_usd":
-		symbol = conset.LINK_USD
-	case "link_usdt":
-		symbol = conset.LINK_USDT
-	case "eos_usd":
-		symbol = conset.EOS_USD
-	case "eos_usdt":
-		symbol = conset.EOS_USDT
-	case "uni_usd":
-		symbol = conset.UNI_USD
-	case "uni_usdt":
-		symbol = conset.UNI_USDT
-	case "crv_usd":
-		symbol = conset.CRV_USD
-	case "crv_usdt":
-		symbol = conset.CRV_USDT
-	case "theta_usd":
-		symbol = conset.THETA_USD
-	case "theta_usdt":
-		symbol = conset.THETA_USDT
-	case "algo_usd":
-		symbol = conset.ALGO_USD
-	case "algo_usdt":
-		symbol = conset.ALGO_USDT
-	case "etc_usd":
-		symbol = conset.ETC_USD
-	case "etc_usdt":
-		symbol = conset.ETC_USDT
-	case "sand_usd":
-		symbol = conset.SAND_USD
-	case "sand_usdt":
-		symbol = conset.SAND_USDT
-	case "sol_usd":
-		symbol = conset.SOL_USD
-	case "sol_usdt":
-		symbol = conset.SOL_USDT
-	case "xtz_usd":
-		symbol = conset.XTZ_USD
-	case "xtz_usdt":
-		symbol = conset.XTZ_USDT
-	case "dash_usd":
-		symbol = conset.DASH_USD
-	case "dash_usdt":
-		symbol = conset.DASH_USDT
-	case "trx_usd":
-		symbol = conset.TRX_USD
-	case "trx_usdt":
-		symbol = conset.TRX_USDT
-	case "xmr_usd":
-		symbol = conset.XMR_USD
-	case "xmr_usdt":
-		symbol = conset.XMR_USDT
-	case "mana_usd":
-		symbol = conset.MANA_USD
-	case "mana_usdt":
-		symbol = conset.MANA_USDT
-	case "sushi_usd":
-		symbol = conset.SUSHI_USD
-	case "sushi_usdt":
-		symbol = conset.SUSHI_USDT
-	case "zec_usd":
-		symbol = conset.ZEC_USD
-	case "zec_usdt":
-		symbol = conset.ZEC_USDT
-	case "snx_usd":
-		symbol = conset.SNX_USD
-	case "snx_usdt":
-		symbol = conset.SNX_USDT
-	case "avax_usd":
-		symbol = conset.AVAX_USD
-	case "avax_usdt":
-		symbol = conset.AVAX_USDT
-	case "waves_usd":
-		symbol = conset.WAVES_USD
-	case "waves_usdt":
-		symbol = conset.WAVES_USDT
-	case "aave_usd":
-		symbol = conset.AAVE_USD
-	case "aave_usdt":
-		symbol = conset.AAVE_USDT
-	case "bsv_usd":
-		symbol = conset.BSV_USD
-	case "bsv_usdt":
-		symbol = conset.BSV_USDT
-	case "xch_usd":
-		symbol = conset.XCH_USD
-	case "xch_usdt":
-		symbol = conset.XCH_USDT
-	case "ens_usd":
-		symbol = conset.ENS_USD
-	case "ens_usdt":
-		symbol = conset.ENS_USDT
-	case "comp_usd":
-		symbol = conset.COMP_USD
-	case "comp_usdt":
-		symbol = conset.COMP_USDT
-	case "egld_usd":
-		symbol = conset.EGLD_USD
-	case "egld_usdt":
-		symbol = conset.EGLD_USDT
-	}
-	return symbol
-}
-
-func dTimes(times conset.TIMES) string {
+func Times(times conset.TIMES) string {
 	var s string
 	switch times {
 	case conset.MIN_15:
@@ -462,11 +69,38 @@ func dTimes(times conset.TIMES) string {
 	return s
 }
 
-func (self *Coin) Create(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES, open, close, high, low, volume float32, timetamp int64) error {
+func Period(period conset.PERIOD) string {
+	var s string
+	switch period {
+	case conset.SPOT:
+		s = "spot"
+	case conset.SWAP:
+		s = "swap"
+	case conset.WEEK:
+		s = "week"
+	case conset.WEEK_NEXT:
+		s = "week_next"
+	case conset.QUARTER:
+		s = "quarter"
+	case conset.QUARTER_NEXT:
+		s = "quarter_next"
+	}
+	return s
+}
+
+func Symbol(base conset.CCY, quote conset.CCY) string {
+	if quote == 0 {
+		return ccyMap[base]
+	}
+
+	return fmt.Sprintf("%s_%s", ccyMap[base], ccyMap[quote])
+}
+
+func (self *Coin) Create(pt conset.PLAT, base conset.CCY, quote conset.CCY, times conset.TIMES, open, close, high, low, volume float32, timetamp int64) error {
 	coin := &Coin{
-		Plat:       dPlat(pt),
-		Symbol:     SymbolToString(symbol),
-		Times:      dTimes(times),
+		Plat:       Plat(pt),
+		Symbol:     Symbol(base, quote),
+		Times:      Times(times),
 		Open:       open,
 		Close:      close,
 		High:       high,
@@ -480,10 +114,19 @@ func (self *Coin) Create(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIME
 	return err
 }
 
-func (self *Coin) LastTime(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES) (bool, time.Time) {
+func (self *Coin) Last(pt conset.PLAT, base conset.CCY, quote conset.CCY, times conset.TIMES) (*Coin, error) {
+	coin := &Coin{Plat: Plat(pt), Symbol: Symbol(base, quote), Times: Times(times)}
+	if b, err := Engine().Desc("create_time").Get(coin); err != nil || !b {
+		return nil, errors.New("get")
+	}
+
+	return coin, nil
+}
+
+func (self *Coin) LastTime(pt conset.PLAT, base conset.CCY, quote conset.CCY, times conset.TIMES) (bool, time.Time) {
 	var startTime time.Time
 
-	coin := &Coin{Plat: dPlat(pt), Symbol: SymbolToString(symbol), Times: dTimes(times)}
+	coin := &Coin{Plat: Plat(pt), Symbol: Symbol(base, quote), Times: Times(times)}
 	if nil == coin.last() {
 		startTime = coin.CreateTime
 	}
@@ -541,22 +184,22 @@ func (self *Coin) last() error {
 	return nil
 }
 
-func (self *Coin) All(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES, start time.Time) ([]*Coin, error) {
+func (self *Coin) All(pt conset.PLAT, base conset.CCY, quote conset.CCY, times conset.TIMES, start time.Time) ([]*Coin, error) {
 	coins := make([]*Coin, 0)
 
 	sql, args, _ := builder.ToSQL(builder.Gte{"create_time": start})
-	if err := Engine().Where(sql, args...).Asc("create_time").Find(&coins, &Coin{Plat: dPlat(pt), Symbol: SymbolToString(symbol), Times: dTimes(times)}); err != nil {
+	if err := Engine().Where(sql, args...).Asc("create_time").Find(&coins, &Coin{Plat: Plat(pt), Symbol: Symbol(base, quote), Times: Times(times)}); err != nil {
 		return nil, err
 	}
 
 	return coins, nil
 }
 
-func (self *Coin) Lasts(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES, limit int, end time.Time) ([]Coin, error) {
+func (self *Coin) Lasts(pt conset.PLAT, base conset.CCY, quote conset.CCY, times conset.TIMES, limit int, end time.Time) ([]Coin, error) {
 	coins := make([]Coin, 0)
 
 	sql, args, _ := builder.ToSQL(builder.Lt{"create_time": end})
-	if err := Engine().Where(sql, args...).Desc("create_time").Limit(limit).Find(&coins, &Coin{Plat: dPlat(pt), Symbol: SymbolToString(symbol), Times: dTimes(times)}); err != nil {
+	if err := Engine().Where(sql, args...).Desc("create_time").Limit(limit).Find(&coins, &Coin{Plat: Plat(pt), Symbol: Symbol(base, quote), Times: Times(times)}); err != nil {
 		return nil, err
 	}
 
@@ -570,8 +213,8 @@ func (self *Coin) Lasts(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES
 
 // 移动平均线
 // N日移动平均线=N日收市价之和/N
-func (self *Coin) MA(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES, limit int, end time.Time) float32 {
-	if coins, err := self.Lasts(pt, symbol, times, limit, end); err != nil {
+func (self *Coin) MA(pt conset.PLAT, base conset.CCY, quote conset.CCY, times conset.TIMES, limit int, end time.Time) float32 {
+	if coins, err := self.Lasts(pt, base, quote, times, limit, end); err != nil {
 		return 0.0
 	} else {
 		var total float32
@@ -586,8 +229,8 @@ func (self *Coin) MA(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES, l
 
 // 平滑移动平均线
 // EMA(12) = [2/(12+1)]*今日收盘价+[11/(12+1)]*作日EMA(12)
-func (self *Coin) EMA(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES, limit int, end time.Time) float32 {
-	if coins, err := self.Lasts(pt, symbol, times, limit, end); err != nil {
+func (self *Coin) EMA(pt conset.PLAT, base conset.CCY, quote conset.CCY, times conset.TIMES, limit int, end time.Time) float32 {
+	if coins, err := self.Lasts(pt, base, quote, times, limit, end); err != nil {
 		return 0.0
 	} else {
 		log.Print(coins)
@@ -599,7 +242,7 @@ func (self *Coin) EMA(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES, 
 		for i := 0; i < len(coins); i++ {
 			c := coins[i]
 			if i == 0 {
-				value = c.EMAStart(pt, symbol, times, limit, c.CreateTime)
+				value = c.EMAStart(pt, base, quote, times, limit, c.CreateTime)
 			} else {
 				value = c.Close*factors + value*(1.0-factors)
 			}
@@ -609,8 +252,8 @@ func (self *Coin) EMA(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES, 
 	}
 }
 
-func (self *Coin) EMAStart(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES, limit int, end time.Time) float32 {
-	if coins, err := self.Lasts(pt, symbol, times, limit, end); err != nil {
+func (self *Coin) EMAStart(pt conset.PLAT, base conset.CCY, quote conset.CCY, times conset.TIMES, limit int, end time.Time) float32 {
+	if coins, err := self.Lasts(pt, base, quote, times, limit, end); err != nil {
 		return 0.0
 	} else {
 		log.Print(coins)
@@ -634,8 +277,8 @@ func (self *Coin) EMAStart(pt conset.PLAT, symbol conset.SYMBOL, times conset.TI
 
 // 通道
 // N日移动平均线=N日收市价之和/N
-func (self *Coin) Chanel(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES, limit int, end time.Time) (float32, float32) {
-	if coins, err := self.Lasts(pt, symbol, times, limit, end); err != nil {
+func (self *Coin) Chanel(pt conset.PLAT, base conset.CCY, quote conset.CCY, times conset.TIMES, limit int, end time.Time) (float32, float32) {
+	if coins, err := self.Lasts(pt, base, quote, times, limit, end); err != nil {
 		return 0.0, 0.0
 	} else {
 		var low float32
@@ -659,12 +302,12 @@ func (self *Coin) Chanel(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIME
 	}
 }
 
-//  平均波动幅度
-//  1、当前交易日的最高价与最低价间的波幅
-//  2、前一交易日收盘价与当个交易日最高价间的波幅
-//  3、前一交易日收盘价与当个交易日最低价间的波幅
-func (self *Coin) ATR(pt conset.PLAT, symbol conset.SYMBOL, times conset.TIMES, limit int, end time.Time) float32 {
-	if coins, err := self.Lasts(pt, symbol, times, limit, end); err != nil {
+// 平均波动幅度
+// 1、当前交易日的最高价与最低价间的波幅
+// 2、前一交易日收盘价与当个交易日最高价间的波幅
+// 3、前一交易日收盘价与当个交易日最低价间的波幅
+func (self *Coin) ATR(pt conset.PLAT, base conset.CCY, quote conset.CCY, times conset.TIMES, limit int, end time.Time) float32 {
+	if coins, err := self.Lasts(pt, base, quote, times, limit, end); err != nil {
 		return 0.0
 	} else {
 		var totalRange float32

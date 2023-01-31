@@ -18,17 +18,17 @@ type Account struct {
 	UpdatedAt time.Time `xorm:"updated"`
 }
 
-func (self *Account) Inserts(pt conset.PLAT, symbol conset.SYMBOL) error {
-	self.Plat = dPlat(pt)
-	self.Symbol = SymbolToString(symbol)
+func (self *Account) Inserts(pt conset.PLAT, base conset.CCY, quote conset.CCY) error {
+	self.Plat = Plat(pt)
+	self.Symbol = Symbol(base,quote)
 
 	_, err := Engine().InsertOne(self)
 	return err
 }
 
-func (self *Account) Account(pt conset.PLAT, symbol conset.SYMBOL) error {
-	self.Plat = dPlat(pt)
-	self.Symbol = SymbolToString(symbol)
+func (self *Account) Account(pt conset.PLAT, base conset.CCY, quote conset.CCY) error {
+	self.Plat = Plat(pt)
+	self.Symbol = Symbol(base,quote)
 
 	if b, err := Engine().Get(self); err != nil || !b {
 		return errors.New("get")

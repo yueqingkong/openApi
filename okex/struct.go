@@ -26,27 +26,28 @@ type Ticker struct {
 }
 
 type Instrument struct {
-	InstType  string `json:"instType"`
-	InstID    string `json:"instId"`
-	Uly       string `json:"uly"`
-	Category  string `json:"category"`
-	BaseCcy   string `json:"baseCcy"`
-	QuoteCcy  string `json:"quoteCcy"`
-	SettleCcy string `json:"settleCcy"`
-	CtVal     string `json:"ctVal"`
-	CtMult    string `json:"ctMult"`
-	CtValCcy  string `json:"ctValCcy"`
-	OptType   string `json:"optType"`
-	Stk       string `json:"stk"`
-	ListTime  string `json:"listTime"`
-	ExpTime   string `json:"expTime"`
-	Lever     string `json:"lever"`
-	TickSz    string `json:"tickSz"`
-	LotSz     string `json:"lotSz"`
-	MinSz     string `json:"minSz"`
-	CtType    string `json:"ctType"`
-	Alias     string `json:"alias"`
-	State     string `json:"state"`
+	InstType   string `json:"instType"`
+	InstID     string `json:"instId"`
+	InstFamily string `json:"instFamily"`
+	Uly        string `json:"uly"`
+	Category   string `json:"category"`
+	BaseCcy    string `json:"baseCcy"`
+	QuoteCcy   string `json:"quoteCcy"`
+	SettleCcy  string `json:"settleCcy"`
+	CtVal      string `json:"ctVal"`
+	CtMult     string `json:"ctMult"`
+	CtValCcy   string `json:"ctValCcy"`
+	OptType    string `json:"optType"`
+	Stk        string `json:"stk"`
+	ListTime   string `json:"listTime"`
+	ExpTime    string `json:"expTime"`
+	Lever      string `json:"lever"`
+	TickSz     string `json:"tickSz"`
+	LotSz      string `json:"lotSz"`
+	MinSz      string `json:"minSz"`
+	CtType     string `json:"ctType"`
+	Alias      string `json:"alias"`
+	State      string `json:"state"`
 }
 
 type PriceLimit struct {
@@ -125,4 +126,3 @@ type SetLeverage struct {
 type UsdCny struct {
 	UsdCny string `json:"usdCny"`
 }
-

@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/yueqingkong/openApi/conset"
-	"github.com/yueqingkong/openApi/db"
 	"github.com/yueqingkong/openApi/util"
 	"github.com/yueqingkong/openApi/ws"
 	"io/ioutil"
@@ -52,7 +51,7 @@ type Ws struct {
 	*ws.WsBuilder
 	once       *sync.Once
 	WsConn     *ws.WsConn
-	respHandle func(symbol conset.SYMBOL, price float32)
+	respHandle func(base, quote conset.CCY, price float32)
 
 	ApiKey     string
 	SecretKey  string
@@ -109,17 +108,14 @@ func (self *Ws) handle(msg []byte) error {
 
 	if len(wsResp.Data) != 0 {
 		for _, data := range wsResp.Data {
-			lastPos := strings.LastIndex(data.InstID, "-")
-			s := data.InstID[0:lastPos]
-			s = strings.ReplaceAll(s, "-", "_")
-			s = strings.ToLower(s)
+			symbols := strings.Split(data.InstID, "-")
 
-			symbol := db.StringToSymbol(s)
 			price := util.Float32(data.Last)
-			log.Printf("handle ws data symbol: %v, price: %v", db.SymbolToString(symbol), price)
+			log.Printf("handle ws data symbol: %v %v %v, price: %v", symbols[0], symbols[1], symbols[2], price)
 
 			if self.respHandle != nil {
-				self.respHandle(symbol, price)
+				base := &Base{}
+				self.respHandle(base.ToCcy(strings.ToLower(symbols[0])), base.ToCcy(strings.ToLower(symbols[1])), price)
 			}
 		}
 		return nil
@@ -133,7 +129,7 @@ func (self *Ws) Subscribe(sub map[string]interface{}) error {
 	return self.WsConn.Subscribe(sub)
 }
 
-func (self *Ws) WsTickers(instIds []string, f func(conset.SYMBOL, float32)) error {
+func (self *Ws) WsTickers(instIds []string, f func(conset.CCY, conset.CCY, float32)) error {
 	self.ConnectWs()
 	self.respHandle = f
 

@@ -20,9 +20,9 @@ func BuySize(price float32, buyunit float32, value float32) float32 {
 }
 
 // 一张 代表的面纸
-func ZDollar(symbol conset.SYMBOL) float32 {
+func ZDollar(symbol conset.CCY) float32 {
 	var v float32
-	if symbol == conset.BTC_USDT || symbol == conset.BTC_USD {
+	if symbol == conset.BTC {
 		v = 100.0
 	} else {
 		v = 10.0

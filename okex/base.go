@@ -1,6 +1,7 @@
 package okex
 
 import (
+	"fmt"
 	"github.com/yueqingkong/openApi/conset"
 	"github.com/yueqingkong/openApi/db"
 	"github.com/yueqingkong/openApi/util"
@@ -15,6 +16,20 @@ type Base struct {
 	*Ws
 }
 
+var (
+	ccyStringMap = map[conset.CCY]string{conset.USD: "usd", conset.USDT: "usdt", // 稳定币
+		conset.BTC: "btc", conset.ETH: "eth", conset.LTC: "ltc", conset.DOT: "dot", conset.DOGE: "doge",
+		conset.LUNA: "luna", conset.TONCOIN: "toncoin", conset.SHIBI: "shib", conset.MATIC: "matic", conset.CRO: "cro", conset.BCH: "bch", conset.FTM: "ftm",
+		conset.XLM: "xlm", conset.AXS: "axs", conset.ONE: "one", conset.NEAR: "near", conset.ICP: "icp", conset.LEO: "leo", conset.IOTA: "iota",
+		conset.ADA: "ada", conset.FIL: "fil", conset.ATOM: "atom", conset.XRP: "xrp", conset.LINK: "link", conset.EOS: "eos", conset.UNI: "uni",
+		conset.CRV: "crv", conset.THETA: "theta", conset.ALGO: "algo", conset.ETC: "etc", conset.SAND: "sand", conset.SOL: "sol", conset.XTZ: "xtz",
+		conset.DASH: "dash", conset.TRX: "trx", conset.XMR: "xmr", conset.MANA: "mana", conset.SUSHI: "sushi", conset.ZEC: "zec", conset.SNX: "snx",
+		conset.AVAX: "avax", conset.WAVES: "waves", conset.AAVE: "aave", conset.BSV: "bsv", conset.XCH: "xch", conset.ENS: "ens", conset.COMP: "comp",
+		conset.EGLD: "egld"}
+
+	toCcyMap = map[string]conset.CCY{}
+)
+
 func (self *Base) Init(strings []string) {
 	if len(strings) >= 3 {
 		self.Api = &Api{}
@@ -25,25 +40,30 @@ func (self *Base) Init(strings []string) {
 	}
 }
 
-func (self *Base) ccy(symbol conset.SYMBOL) string {
-	var s string
-
-	switch symbol {
-	case conset.BTC_USD, conset.BTC_USDT:
-		s = "BTC"
-	case conset.ETH_USD, conset.ETH_USDT:
-		s = "ETH"
+func (self *Base) ToCcy(ccy string) conset.CCY {
+	if len(toCcyMap) == 0 {
+		for k, v := range ccyStringMap {
+			toCcyMap[v] = k
+		}
 	}
-	return s
+
+	return toCcyMap[ccy]
 }
 
-func (self *Base) instId(symbol conset.SYMBOL) string {
-	var s string
-	s = self.Symbol(symbol)
-	s = strings.ReplaceAll(s, "_", "-")
-	s = strings.ToUpper(s)
-	s += "-SWAP"
-	return s
+// base 交易货币
+// quote 计价货币(USD, USDT)
+//func (self *Base) instId(base conset.CCY, quote conset.CCY) string {
+//	return fmt.Sprintf("%s-%s", strings.ToUpper(ccyStringMap[base]), strings.ToUpper(ccyStringMap[quote]))
+//}
+
+// base 交易货币
+// quote 计价货币(USD, USDT)
+func (self *Base) instIds(base conset.CCY, quote conset.CCY, period conset.PERIOD) string {
+	if base == 0 || quote == 0 || period == 0 {
+		return ""
+	}
+
+	return fmt.Sprintf("%s-%s-%s", strings.ToUpper(ccyStringMap[base]), strings.ToUpper(ccyStringMap[quote]), strings.ToUpper(self.Period(period)))
 }
 
 func (self *Base) before(start time.Time) string {
@@ -56,21 +76,6 @@ func (self *Base) before(start time.Time) string {
 
 func (self *Base) Plat() conset.PLAT {
 	return conset.OKEX
-}
-
-func (self *Base) Symbol(symbol conset.SYMBOL) string {
-	//var s string
-	//switch symbol {
-	//case conset.BTC_USD:
-	//	s = "btc_usd"
-	//case conset.BTC_USDT:
-	//	s = "btc_usdt"
-	//case conset.ETH_USD:
-	//	s = "eth_usd"
-	//case conset.ETH_USDT:
-	//	s = "eth_usdt"
-	//}
-	return db.SymbolToString(symbol)
 }
 
 func (self *Base) Period(period conset.PERIOD) string {
@@ -111,7 +116,7 @@ func (self *Base) Times(times conset.TIMES) string {
 	return s
 }
 
-func (self *Base) TdMode(period conset.PERIOD) string {
+func TdMode(period conset.PERIOD) string {
 	var s string
 	switch period {
 	case conset.SPOT:
@@ -124,7 +129,7 @@ func (self *Base) TdMode(period conset.PERIOD) string {
 	return s
 }
 
-func (self *Base) Side(direct conset.OPERATION) (string, string) {
+func Side(direct conset.OPERATION) (string, string) {
 	var side string
 	var posSide string
 
@@ -145,8 +150,8 @@ func (self *Base) Side(direct conset.OPERATION) (string, string) {
 	return side, posSide
 }
 
-func (self *Base) Pull(symbol conset.SYMBOL, times conset.TIMES, start time.Time) bool {
-	candles := self.Candles(self.instId(symbol), self.Times(times), self.before(start))
+func (self *Base) Pull(base conset.CCY, quote conset.CCY, period conset.PERIOD, times conset.TIMES, start time.Time) bool {
+	candles := self.Candles(self.instIds(base, quote, period), self.Times(times), self.before(start))
 
 	if len(candles) == 0 {
 		log.Printf("Pull : 同步完成")
@@ -164,7 +169,7 @@ func (self *Base) Pull(symbol conset.SYMBOL, times conset.TIMES, start time.Time
 
 		if k != 0 { // 最近时间一条有效的K线不保存
 			coin := &db.Coin{}
-			if err := coin.Create(self.Plat(), symbol, times, float32(open), float32(close), float32(high), float32(low), float32(volume), timetamp); err != nil {
+			if err := coin.Create(self.Plat(), base, quote, times, float32(open), float32(close), float32(high), float32(low), float32(volume), timetamp); err != nil {
 				log.Printf("Create err: %+v", err)
 			}
 		}
@@ -172,8 +177,8 @@ func (self *Base) Pull(symbol conset.SYMBOL, times conset.TIMES, start time.Time
 	return false
 }
 
-func (self *Base) Price(symbol conset.SYMBOL) float32 {
-	tickers := self.Ticker(self.instId(symbol))
+func (self *Base) Price(base conset.CCY, quote conset.CCY, period conset.PERIOD) float32 {
+	tickers := self.Ticker(self.instIds(base, quote, period))
 	if len(tickers) == 0 {
 		return 0.0
 	}
@@ -190,8 +195,8 @@ func (self *Base) UsdCny() float32 {
 	return util.Float32(rates[0].UsdCny)
 }
 
-func (self *Base) Balance(symbol conset.SYMBOL) float32 {
-	bs := self.balance(self.ccy(symbol))
+func (self *Base) Balance(c conset.CCY) float32 {
+	bs := self.balance(strings.ToUpper(ccyStringMap[c]))
 	if len(bs) == 0 {
 		return 0.0
 	}
@@ -199,22 +204,23 @@ func (self *Base) Balance(symbol conset.SYMBOL) float32 {
 	return util.Float32(bs[0].TotalEq)
 }
 
-func (self *Base) SetLeverage(symbol conset.SYMBOL, period conset.PERIOD, direct conset.OPERATION, level string) bool {
-	_, poside := self.Side(direct)
-
-	bs := self.setLeverage(self.instId(symbol), level, self.TdMode(period), poside)
-	if len(bs) == 0 {
-		return false
+func (self *Base) PullInstrument(period conset.PERIOD) {
+	instruments := self.Instrument(period, 0, 0)
+	for _, ins := range instruments {
+		instrument := &db.Instrument{}
+		instrument.CreateOrUpdate(self.Plat(), period, ins.InstID, ins.Uly, ins.InstFamily, ins.SettleCcy, ins.CtVal, ins.State)
 	}
-
-	return true
 }
 
-func (self *Base) Orders(symbol conset.SYMBOL, period conset.PERIOD, direct conset.OPERATION, price, sz float32) bool {
-	side, poside := self.Side(direct)
+func (self *Base) Instrument(period conset.PERIOD, base conset.CCY, quote conset.CCY) []*Instrument {
+	return self.Instruments(strings.ToUpper(self.Period(period)), "", self.instIds(base, quote, period))
+}
+
+func (self *Base) Orders(base conset.CCY, quote conset.CCY, period conset.PERIOD, direct conset.OPERATION, price, sz float32) bool {
+	side, poside := Side(direct)
 	price = priceLimit(direct, price)
 
-	orders := self.Order(self.instId(symbol), self.TdMode(period), side, poside, price, sz)
+	orders := self.Order(self.instIds(base, quote, period), TdMode(period), side, poside, price, sz)
 	if len(orders) == 0 {
 		return false
 	}
@@ -234,11 +240,12 @@ func priceLimit(direct conset.OPERATION, price float32) float32 {
 	return price
 }
 
-func (self *Base) SubscribeTickers(symbols []conset.SYMBOL, f func(conset.SYMBOL, float32)) {
-	instIds := make([]string, 0)
+func (self *Base) SubscribeTickers(symbols [][2]conset.CCY, period conset.PERIOD, f func(conset.CCY, conset.CCY, float32)) {
+	ids := make([]string, 0)
 	for _, symbol := range symbols {
-		instIds = append(instIds, self.instId(symbol))
+		inst := self.instIds(symbol[0], symbol[1], period)
+		ids = append(ids, inst)
 	}
 
-	self.WsTickers(instIds, f)
+	self.WsTickers(ids, f)
 }

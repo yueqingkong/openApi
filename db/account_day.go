@@ -17,9 +17,9 @@ type AccountDay struct {
 	UpdatedAt  time.Time `xorm:"updated"`
 }
 
-func (self *AccountDay) Inserts(pt conset.PLAT, symbol conset.SYMBOL) error {
-	self.Plat = dPlat(pt)
-	self.Symbol = SymbolToString(symbol)
+func (self *AccountDay) Inserts(pt conset.PLAT, base conset.CCY, quote conset.CCY) error {
+	self.Plat = Plat(pt)
+	self.Symbol = Symbol(base, quote)
 
 	_, err := Engine().InsertOne(self)
 	return err
