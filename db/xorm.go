@@ -24,8 +24,8 @@ func ConnectSQL(name, user, host, port, password string) {
 	}
 
 	engine.ShowSQL(true)
-	engine.DatabaseTZ = time.UTC
-	engine.TZLocation = time.UTC
+	engine.DatabaseTZ = time.Local
+	engine.TZLocation = time.Local
 	err = engine.Sync2(
 		&Coin{},
 		&Account{},
