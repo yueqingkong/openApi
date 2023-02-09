@@ -5,6 +5,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
 	"log"
+	"time"
 )
 
 var engine *xorm.Engine
@@ -23,9 +24,8 @@ func ConnectSQL(name, user, host, port, password string) {
 	}
 
 	engine.ShowSQL(true)
-	// 本地时区
-	//engine.DatabaseTZ = time.Local // 必须
-	//engine.TZLocation = time.Local // 必须
+	engine.DatabaseTZ = time.UTC
+	engine.TZLocation = time.UTC
 	err = engine.Sync2(
 		&Coin{},
 		&Account{},

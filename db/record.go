@@ -33,6 +33,20 @@ type Record struct {
 	UpdatedAt     time.Time `xorm:"updated"`
 }
 
+func Operation(op int) string {
+	var s string
+	if op == conset.BUY_HIGH {
+		s = "开多"
+	} else if op == conset.BUY_LOW {
+		s = "开空"
+	} else if op == conset.SELL_HIGH {
+		s = "平多"
+	} else if op == conset.SELL_LOW {
+		s = "平空"
+	}
+	return s
+}
+
 func (self *Record) Insert(pt conset.PLAT, base conset.CCY, quote conset.CCY) error {
 	self.Plat = Plat(pt)
 	self.Symbol = Symbol(base, quote)
