@@ -22,7 +22,7 @@ type Coin struct {
 	Low        float32   `xorm:"float"`
 	Volume     float32   `xorm:"float"`
 	Timestamp  int64     `json:"time_stamp" xorm:"bigint time_stamp index unique(pl-time)"` // 毫秒
-	CreateTime time.Time `json:"create_time" xorm:"DATETIME create_time index(p-s-t-c)"`
+	CreateTime time.Time `json:"create_time" xorm:"create_time index(p-s-t-c)"`
 	CreatedAt  time.Time `xorm:"created"`
 	UpdatedAt  time.Time `xorm:"updated"`
 }

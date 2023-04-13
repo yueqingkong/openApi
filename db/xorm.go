@@ -3,9 +3,9 @@ package db
 import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/go-xorm/xorm"
 	"log"
 	"time"
+	"xorm.io/xorm"
 )
 
 var engine *xorm.Engine
