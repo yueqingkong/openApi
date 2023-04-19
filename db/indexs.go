@@ -46,7 +46,7 @@ func (self *Indexs) IndexLast(name string, bs, quote conset.CCY) (*Indexs, error
 }
 
 func (self *Indexs) Create(pt conset.PLAT, name string, bs conset.CCY, quote conset.CCY, start time.Time, short, long, low, high, atr float32) error {
-	record := &Indexs{Plat: Plat(pt), Name: name, Symbol: Symbol(bs, quote), Date: util.TimeFormatDay(start),
+	record := &Indexs{Plat: Plat(pt), Name: name, Symbol: Symbol(bs, quote), Date: util.TimeFormatString(start),
 		P1: short, P2: long, P3: low, P4: high, P5: atr}
 
 	_, err := Engine().InsertOne(record)
