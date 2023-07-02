@@ -111,7 +111,7 @@ func (self *Ws) handle(msg []byte) error {
 			symbols := strings.Split(data.InstID, "-")
 
 			price := util.Float32(data.Last)
-			log.Printf("handle ws data symbol: %v %v %v, price: %v", symbols[0], symbols[1], symbols[2], price)
+			log.Printf("handle ws data symbol: %v, price: %v", symbols, price)
 
 			if self.respHandle != nil {
 				base := &Base{}
