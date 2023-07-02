@@ -134,23 +134,32 @@ func TdMode(period conset.PERIOD) string {
 	return s
 }
 
-func Side(direct conset.OPERATION) (string, string) {
+func Side(period conset.PERIOD, direct conset.OPERATION) (string, string) {
 	var side string
 	var posSide string
 
 	switch direct {
 	case conset.BUY_HIGH:
 		side = conset.BUY
-		posSide = conset.LONG
 	case conset.BUY_LOW:
 		side = conset.SELL
-		posSide = conset.SHORT
 	case conset.SELL_HIGH:
 		side = conset.SELL
-		posSide = conset.LONG
 	case conset.SELL_LOW:
 		side = conset.BUY
-		posSide = conset.SHORT
+	}
+
+	if period == conset.SWAP {
+		switch direct {
+		case conset.BUY_HIGH:
+			posSide = conset.LONG
+		case conset.BUY_LOW:
+			posSide = conset.SHORT
+		case conset.SELL_HIGH:
+			posSide = conset.LONG
+		case conset.SELL_LOW:
+			posSide = conset.SHORT
+		}
 	}
 	return side, posSide
 }
@@ -222,7 +231,7 @@ func (self *Base) Instrument(period conset.PERIOD, base conset.CCY, quote conset
 }
 
 func (self *Base) Orders(base conset.CCY, quote conset.CCY, period conset.PERIOD, direct conset.OPERATION, price, sz float32) bool {
-	side, poside := Side(direct)
+	side, poside := Side(period, direct)
 	price = priceLimit(direct, price)
 
 	orders := self.Order(self.instIds(base, quote, period), TdMode(period), side, poside, price, sz)
