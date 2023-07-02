@@ -63,7 +63,12 @@ func (self *Base) instIds(base conset.CCY, quote conset.CCY, period conset.PERIO
 		return ""
 	}
 
-	return fmt.Sprintf("%s-%s-%s", strings.ToUpper(ccyStringMap[base]), strings.ToUpper(ccyStringMap[quote]), strings.ToUpper(self.Period(period)))
+	if conset.SPOT == period {
+		return fmt.Sprintf("%s-%s", strings.ToUpper(ccyStringMap[base]), strings.ToUpper(ccyStringMap[quote]))
+	} else if conset.SWAP == period {
+		return fmt.Sprintf("%s-%s-%s", strings.ToUpper(ccyStringMap[base]), strings.ToUpper(ccyStringMap[quote]), strings.ToUpper(self.Period(period)))
+	}
+	return ""
 }
 
 func (self *Base) before(start time.Time) string {
