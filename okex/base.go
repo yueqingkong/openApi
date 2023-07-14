@@ -230,16 +230,25 @@ func (self *Base) Instrument(period conset.PERIOD, base conset.CCY, quote conset
 	return self.Instruments(strings.ToUpper(self.Period(period)), "", self.instIds(base, quote, period))
 }
 
-func (self *Base) Orders(base conset.CCY, quote conset.CCY, period conset.PERIOD, direct conset.OPERATION, price, sz float32) bool {
+func (self *Base) OrderInfos(base conset.CCY, quote conset.CCY, period conset.PERIOD, orderId string) (bool, *OrderInfo) {
+	infos := self.OrderInfo(self.instIds(base, quote, period), orderId)
+	if len(infos.Data)==0 {
+		return false, nil
+	}
+
+	return infos.Code == "0", infos
+}
+
+func (self *Base) Orders(base conset.CCY, quote conset.CCY, period conset.PERIOD, direct conset.OPERATION, price, sz float32) (bool, string) {
 	side, poside := Side(period, direct)
 	price = priceLimit(direct, price)
 
 	orders := self.Order(self.instIds(base, quote, period), TdMode(period), side, poside, price, sz)
 	if len(orders) == 0 {
-		return false
+		return false, ""
 	}
 
-	return orders[0].SCode == "0"
+	return orders[0].SCode == "0", orders[0].OrdID
 }
 
 // limit 成交价格

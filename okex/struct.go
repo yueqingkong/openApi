@@ -116,6 +116,58 @@ type Balance struct {
 	UTime       string `json:"uTime"`
 }
 
+type OrderInfo struct {
+	Code string `json:"code"`
+	Msg  string `json:"msg"`
+	Data []struct {
+		InstType           string `json:"instType"`
+		InstId             string `json:"instId"`
+		Ccy                string `json:"ccy"`
+		OrdId              string `json:"ordId"`
+		ClOrdId            string `json:"clOrdId"`
+		Tag                string `json:"tag"`
+		Px                 string `json:"px"`
+		Sz                 string `json:"sz"`
+		Pnl                string `json:"pnl"`
+		OrdType            string `json:"ordType"`
+		Side               string `json:"side"`
+		PosSide            string `json:"posSide"`
+		TdMode             string `json:"tdMode"`
+		AccFillSz          string `json:"accFillSz"`
+		FillPx             string `json:"fillPx"`
+		TradeId            string `json:"tradeId"`
+		FillSz             string `json:"fillSz"`
+		FillTime           string `json:"fillTime"`
+		Source             string `json:"source"`
+		State              string `json:"state"`
+		AvgPx              string `json:"avgPx"`
+		Lever              string `json:"lever"`
+		AttachAlgoClOrdId  string `json:"attachAlgoClOrdId"`
+		TpTriggerPx        string `json:"tpTriggerPx"`
+		TpTriggerPxType    string `json:"tpTriggerPxType"`
+		TpOrdPx            string `json:"tpOrdPx"`
+		SlTriggerPx        string `json:"slTriggerPx"`
+		SlTriggerPxType    string `json:"slTriggerPxType"`
+		SlOrdPx            string `json:"slOrdPx"`
+		StpId              string `json:"stpId"`
+		StpMode            string `json:"stpMode"`
+		FeeCcy             string `json:"feeCcy"`
+		Fee                string `json:"fee"`
+		RebateCcy          string `json:"rebateCcy"`
+		Rebate             string `json:"rebate"`
+		TgtCcy             string `json:"tgtCcy"`
+		Category           string `json:"category"`
+		ReduceOnly         string `json:"reduceOnly"`
+		CancelSource       string `json:"cancelSource"`
+		CancelSourceReason string `json:"cancelSourceReason"`
+		QuickMgnType       string `json:"quickMgnType"`
+		AlgoClOrdId        string `json:"algoClOrdId"`
+		AlgoId             string `json:"algoId"`
+		UTime              string `json:"uTime"`
+		CTime              string `json:"cTime"`
+	} `json:"data"`
+}
+
 type SetLeverage struct {
 	Lever   string `json:"lever"`
 	MgnMode string `json:"mgnMode"`

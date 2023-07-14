@@ -205,6 +205,25 @@ func (self *Api) balance(ccy string) []*Balance {
 	return result
 }
 
+// 获取订单信息
+func (self *Api) OrderInfo(instId, orderId string) *OrderInfo {
+	var api = "/api/v5/trade/order"
+
+	params := make(map[string]string)
+	if instId != "" {
+		params["instId"] = instId
+	}
+	if orderId != "" {
+		params["ordId"] = orderId
+	}
+	api = api + parseParams(params)
+
+	var url = okApi + api
+	result := &OrderInfo{}
+	plat.Get(url, self.header("get", api, nil), result)
+	return result
+}
+
 // 设置杠杆倍数
 func (self *Api) setLeverage(instId, lever, mgnMode, posSide string) []*SetLeverage {
 	var api = "/api/v5/account/set-leverage"

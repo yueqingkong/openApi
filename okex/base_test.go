@@ -36,8 +36,17 @@ func TestOrders(t *testing.T) {
 	base := &Base{}
 	base.Init([]string{"", "", ""})
 
-	b := base.Orders(conset.BTC, conset.USDT, conset.SWAP, conset.SELL_HIGH, 23300, 1.0)
-	t.Log(b)
+	b, orderid := base.Orders(conset.BTC, conset.USDT, conset.SWAP, conset.SELL_HIGH, 23300, 1.0)
+	t.Log(b, orderid)
+}
+
+// go test -v -run TestOrderInfos
+func TestOrderInfos(t *testing.T) {
+	base := &Base{}
+	base.Init([]string{"", "", ""})
+
+	b, info := base.OrderInfos(conset.BCH, conset.USDT, conset.SWAP, "")
+	t.Log(b, info)
 }
 
 // go test -v -run TestSubscribeTickers
