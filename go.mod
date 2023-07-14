@@ -6,10 +6,11 @@ replace (
 )
 
 require (
-	github.com/go-resty/resty v0.0.0-00010101000000-000000000000
+	github.com/go-resty/resty v1.12.0
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.5.0
+	golang.org/x/net v0.12.0 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	xorm.io/builder v0.3.11-0.20220531020008-1bd24a7dc978
