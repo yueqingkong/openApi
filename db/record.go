@@ -12,6 +12,7 @@ type Record struct {
 	Id            int64
 	Name          string    `xorm:"name index(name-symbol-period) index(n-s-s) index(n-s-o-p)"`                 // 策略
 	Plat          string    `xorm:"plat"`                                                                       // 平台名称
+	OrderId       string    `form:"order-id" xorm:"order-id"`                                                   // 订单id
 	Symbol        string    `form:"Symbol" xorm:"symbol index(name-symbol-period) index(n-s-s) index(n-s-o-p)"` // Token
 	Period        string    `xorm:"period index(name-symbol-period)"`                                           // 周期 spot|week|quarter
 	Operation     int32     `form:"Operation" xorm:"int index(n-s-o-p)"`                                        // 1: 开多 2: 开空 3: 平仓
