@@ -23,7 +23,7 @@ func ConnectSQL(name, user, host, port, password string) {
 		log.Fatal("[MySql] 连接失败,", err)
 	}
 
-	engine.ShowSQL(true)
+	engine.ShowSQL(false)
 	engine.DatabaseTZ = time.Local
 	engine.TZLocation = time.Local
 	err = engine.Sync2(
