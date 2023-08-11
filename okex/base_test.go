@@ -1,6 +1,7 @@
 package okex
 
 import (
+	"fmt"
 	"github.com/yueqingkong/openApi/conset"
 	"log"
 	"testing"
@@ -29,6 +30,15 @@ func TestPrice(t *testing.T) {
 
 	pr := base.Price(conset.BTC, conset.USD, conset.SWAP)
 	t.Log(pr)
+}
+
+// go test -v -run TestFundingRate
+func TestFundingRate(t *testing.T) {
+	base := &Base{}
+	base.Init([]string{"", "", ""})
+
+	rate, nextRate := base.FundingRate(conset.BTC, conset.USD)
+	t.Log(fmt.Sprintf("%.5f",rate), nextRate)
 }
 
 // go test -v -run TestOrders

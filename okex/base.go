@@ -209,6 +209,15 @@ func (self *Base) UsdCny() float32 {
 	return util.Float32(rates[0].UsdCny)
 }
 
+func (self *Base) FundingRate(base conset.CCY, quote conset.CCY) (float32, float32) {
+	rates := self.Api.FundingRate(self.instIds(base, quote, conset.SWAP))
+	if len(rates) == 0 {
+		return 0, 0
+	}
+
+	return util.Float32(rates[0].FundingRate), util.Float32(rates[0].NextFundingRate)
+}
+
 func (self *Base) Balance(c conset.CCY) float32 {
 	bs := self.balance(strings.ToUpper(ccyStringMap[c]))
 	if len(bs) == 0 {
@@ -232,7 +241,7 @@ func (self *Base) Instrument(period conset.PERIOD, base conset.CCY, quote conset
 
 func (self *Base) OrderInfos(base conset.CCY, quote conset.CCY, period conset.PERIOD, orderId string) (bool, *OrderInfo) {
 	infos := self.OrderInfo(self.instIds(base, quote, period), orderId)
-	if len(infos.Data)==0 {
+	if len(infos.Data) == 0 {
 		return false, nil
 	}
 

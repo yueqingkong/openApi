@@ -178,3 +178,12 @@ type SetLeverage struct {
 type UsdCny struct {
 	UsdCny string `json:"usdCny"`
 }
+
+type FundingRateBody struct {
+	FundingRate     string `json:"fundingRate"`
+	FundingTime     string `json:"fundingTime"`
+	InstId          string `json:"instId"`
+	InstType        string `json:"instType"`
+	NextFundingRate string `json:"nextFundingRate"`
+	NextFundingTime string `json:"nextFundingTime"`
+}
