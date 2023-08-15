@@ -10,27 +10,29 @@ import (
 // Record 交易记录
 type Record struct {
 	Id            int64
-	Name          string    `xorm:"name index(name-symbol-period) index(n-s-s) index(n-s-o-p)"`                 // 策略
-	Plat          string    `xorm:"plat"`                                                                       // 平台名称
-	OrderId       string    `form:"order-id" xorm:"order-id"`                                                   // 订单id
-	Symbol        string    `form:"Symbol" xorm:"symbol index(name-symbol-period) index(n-s-s) index(n-s-o-p)"` // Token
-	Period        string    `xorm:"period index(name-symbol-period)"`                                           // 周期 spot|week|quarter
-	Operation     int32     `form:"Operation" xorm:"int index(n-s-o-p)"`                                        // 1: 开多 2: 开空 3: 平仓
-	Position      int32     `form:"Position" xorm:"int index(n-s-o-p)"`                                         // 加仓层数
-	Price         float32   `form:"Price" xorm:"float"`                                                         // 当前价格
-	RealPrice     float32   `form:"real-price" xorm:"real-price"`                                               // 成交价格
-	AvgPrice      float32   `form:"AvgPrice" xorm:"float"`                                                      // 均价
-	Used          float32   `form:"Used" xorm:"float"`                                                          // 已开仓Token
-	Size          float32   `form:"Size" xorm:"float"`                                                          // 开仓张数
-	Total         float32   `form:"Total" xorm:"float"`                                                         // 当前账户总值
-	LossPrice     float32   `form:"LossPrice" xorm:"float"`                                                     // 止损价
-	EstimatedLoss float32   `form:"EstimatedLoss" xorm:"float"`                                                 // 预计亏损
-	Detail        string    `xorm:"detail text"`                                                                // 描述 usd->token | ust<-token
-	Profit        float32   `form:"Profit" xorm:"float"`                                                        // 收益
-	ProfitRate    float32   `xorm:"float"`                                                                      // 收益率(百分比 %)
-	TotalRate     float32   `xorm:"float"`                                                                      // 总收益率(百分比 %)
-	Status        int32     `form:"status" xorm:"status index(n-s-s)"`                                          // 状态 1: 开单 2: 平单 3: 等待
-	CreateTime    time.Time `json:"create_time" xorm:"create_time index"`                                       // 时间
+	Name          string    `xorm:"name index(name-symbol-period) index(n-s-s) index(n-s-o-p)"`   // 策略
+	Plat          string    `xorm:"plat"`                                                         // 平台名称
+	OrderId       string    `xorm:"order_id"`                                                     // 订单id
+	Symbol        string    `xorm:"symbol index(name-symbol-period) index(n-s-s) index(n-s-o-p)"` // Token
+	Period        string    `xorm:"period index(name-symbol-period)"`                             // 周期 spot|week|quarter
+	Operation     int32     `xorm:"operation index(n-s-o-p)"`                                     // 1: 开多 2: 开空 3: 平仓
+	Position      int32     `xorm:"position index(n-s-o-p)"`                                      // 加仓层数
+	Price         float32   `xorm:"price"`                                                        // 当前价格
+	RealPrice     float32   `xorm:"real_price"`                                                   // 成交价格
+	AvgPrice      float32   `xorm:"avg_price"`                                                    // 均价
+	Used          float32   `xorm:"used"`                                                         // 已开仓Token
+	Size          float32   `xorm:"size"`                                                         // 下单数量
+	RealSize      float32   `xorm:"real_size"`                                                    // 实际成交数量
+	Total         float32   `xorm:"total"`                                                        // 当前账户总值
+	LossPrice     float32   `xorm:"loss_price"`                                                   // 止损价
+	EstimatedLoss float32   `xorm:"estimated_loss"`                                               // 预计亏损
+	Fee           float32   `xorm:"fee"`                                                          // 手续费
+	Detail        string    `xorm:"detail text"`                                                  // 描述 usd->token | ust<-token
+	Profit        float32   `xorm:"profit"`                                                       // 收益
+	ProfitRate    float32   `xorm:"profit_rate"`                                                  // 收益率(百分比 %)
+	TotalRate     float32   `xorm:"total_rate"`                                                   // 总收益率(百分比 %)
+	Status        int32     `xorm:"status index(n-s-s)"`                                          // 状态 1: 开单 2: 平单 3: 等待
+	CreateTime    time.Time `json:"create_time" xorm:"create_time index"`                         // 时间
 	CreatedAt     time.Time `xorm:"created"`
 	UpdatedAt     time.Time `xorm:"updated"`
 }

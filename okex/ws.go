@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/yueqingkong/openApi/conset"
-	"github.com/yueqingkong/openApi/util"
 	"github.com/yueqingkong/openApi/ws"
 	"io/ioutil"
 	"log"
@@ -27,31 +26,14 @@ type wsResponse struct {
 		Channel string `json:"channel"`
 		InstID  string `json:"instId"`
 	} `json:"arg"`
-	Data []struct {
-		InstType  string `json:"instType"`
-		InstID    string `json:"instId"`
-		Last      string `json:"last"`
-		LastSz    string `json:"lastSz"`
-		AskPx     string `json:"askPx"`
-		AskSz     string `json:"askSz"`
-		BidPx     string `json:"bidPx"`
-		BidSz     string `json:"bidSz"`
-		Open24H   string `json:"open24h"`
-		High24H   string `json:"high24h"`
-		Low24H    string `json:"low24h"`
-		SodUtc0   string `json:"sodUtc0"`
-		SodUtc8   string `json:"sodUtc8"`
-		VolCcy24H string `json:"volCcy24h"`
-		Vol24H    string `json:"vol24h"`
-		Ts        string `json:"ts"`
-	} `json:"data"`
+	Data []interface{} `json:"data"`
 }
 
 type Ws struct {
 	*ws.WsBuilder
 	once       *sync.Once
 	WsConn     *ws.WsConn
-	respHandle func(base, quote conset.CCY, price float32)
+	respHandle func(base, quote conset.CCY, data interface{})
 
 	ApiKey     string
 	SecretKey  string
@@ -108,14 +90,11 @@ func (self *Ws) handle(msg []byte) error {
 
 	if len(wsResp.Data) != 0 {
 		for _, data := range wsResp.Data {
-			symbols := strings.Split(data.InstID, "-")
-
-			price := util.Float32(data.Last)
-			log.Printf("handle ws data symbol: %v, price: %v", symbols, price)
+			symbols := strings.Split(wsResp.Arg.InstID, "-")
+			log.Printf("handle ws data symbol: %v, price: %v", symbols, data)
 
 			if self.respHandle != nil {
-				base := &Base{}
-				self.respHandle(base.ToCcy(strings.ToLower(symbols[0])), base.ToCcy(strings.ToLower(symbols[1])), price)
+				self.respHandle(conset.CCY(strings.ToUpper(symbols[0])), conset.CCY(strings.ToUpper(symbols[1])), data)
 			}
 		}
 		return nil
@@ -129,7 +108,7 @@ func (self *Ws) Subscribe(sub map[string]interface{}) error {
 	return self.WsConn.Subscribe(sub)
 }
 
-func (self *Ws) WsTickers(instIds []string, f func(conset.CCY, conset.CCY, float32)) error {
+func (self *Ws) WsTickers(channel string, instIds []string, f func(conset.CCY, conset.CCY, interface{})) error {
 	self.ConnectWs()
 	self.respHandle = f
 
@@ -139,7 +118,7 @@ func (self *Ws) WsTickers(instIds []string, f func(conset.CCY, conset.CCY, float
 	args := make([]interface{}, 0)
 	for _, instId := range instIds {
 		arg := make(map[string]interface{})
-		arg["channel"] = "tickers"
+		arg["channel"] = channel
 		arg["instId"] = instId
 		args = append(args, arg)
 	}

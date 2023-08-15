@@ -13,6 +13,29 @@ type Response struct {
 	Data []interface{} `json:"data"`
 }
 
+// GET 返回参数直接解析
+func GET(url string, headers map[string]string, inter interface{}) error {
+	if headers == nil {
+		headers = make(map[string]string)
+		headers["Content-Type"] = "application/x-www-form-urlencoded"
+	}
+
+	resp, err := resty.New().SetTimeout(time.Minute * 1).R().
+		SetHeaders(headers).
+		Get(url)
+
+	if err != nil {
+		return err
+	} else {
+		log.Printf("Get Body %s", string(resp.Body()))
+		if err = json.Unmarshal(resp.Body(), inter); err != nil {
+			log.Printf("Get err: %v", err)
+		}
+	}
+
+	return err
+}
+
 // GET
 func Get(url string, headers map[string]string, inter interface{}) error {
 	if headers == nil {

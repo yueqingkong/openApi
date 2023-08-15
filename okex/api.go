@@ -107,6 +107,12 @@ func (self *Api) Ticker(instId string) []*Ticker {
 }
 
 // 获取所有可交易产品的信息列表
+// instyType 产品类型
+// SPOT：币币
+// MARGIN：币币杠杆
+// SWAP：永续合约
+// FUTURES：交割合约
+// OPTION：期权
 func (self *Api) Instruments(instType, uly, instId string) []*Instrument {
 	api := "/api/v5/public/instruments"
 
@@ -181,6 +187,16 @@ func (self *Api) FundingRate(instId string) []*FundingRateBody {
 	return inst
 }
 
+// 获取交易大数据支持币种
+func (self *Api) SupportCoin() *SupportCoinBody {
+	api := "/api/v5/rubik/stat/trading-data/support-coin"
+
+	var url = okApi + api
+	inst := &SupportCoinBody{}
+	plat.GET(url, nil, inst)
+	return inst
+}
+
 // 获取所有交易产品K线数据
 // 获取K线数据。K线数据按请求的粒度分组返回，K线数据每个粒度最多可获取最近1440条。
 // bar [1m/3m/5m/15m/30m/1H/2H/4H/6H/12H/1D/1W/1M/3M/6M/1Y]
@@ -220,7 +236,7 @@ func (self *Api) balance(ccy string) []*Balance {
 }
 
 // 获取订单信息
-func (self *Api) OrderInfo(instId, orderId string) *OrderInfo {
+func (self *Api) OrderInfo(instId, orderId string) []*OrderInfo {
 	var api = "/api/v5/trade/order"
 
 	params := make(map[string]string)
@@ -233,8 +249,8 @@ func (self *Api) OrderInfo(instId, orderId string) *OrderInfo {
 	api = api + parseParams(params)
 
 	var url = okApi + api
-	result := &OrderInfo{}
-	plat.Get(url, self.header("get", api, nil), result)
+	result := make([]*OrderInfo,0)
+	plat.Get(url, self.header("get", api, nil), &result)
 	return result
 }
 
@@ -267,19 +283,37 @@ func (self *Api) setLeverage(instId, lever, mgnMode, posSide string) []*SetLever
 // 当币币/币币杠杆以市价买入时，指计价货币的数量。
 // 当币币/币币杠杆以市价卖出时，指交易货币的数量。
 // 当交割、永续、期权买入和卖出时，指合约张数。
-func (self *Api) Order(instId, tdMode, side, posSide string, px, sz float32) []*OrderRes {
+//func (self *Api) Order(instId, tdMode, side, posSide string, px, sz float32) []*OrderRes {
+//	var api = "/api/v5/trade/order"
+//	var url = okApi + api
+//
+//	params := make(map[string]interface{}, 0)
+//	params["instId"] = instId
+//	params["tdMode"] = tdMode
+//	params["posSide"] = posSide
+//
+//	params["side"] = side
+//	params["ordType"] = "limit"
+//	params["sz"] = sz
+//	params["px"] = px
+//
+//	results := make([]*OrderRes, 0)
+//	plat.Post(url, self.header("post", api, params), params, &results)
+//	return results
+//}
+func (self *Api) Order(params *OrderParam) []*OrderRes {
 	var api = "/api/v5/trade/order"
 	var url = okApi + api
 
-	params := make(map[string]interface{}, 0)
-	params["instId"] = instId
-	params["tdMode"] = tdMode
-	params["posSide"] = posSide
+	results := make([]*OrderRes, 0)
+	plat.Post(url, self.header("post", api, params), params, &results)
+	return results
+}
 
-	params["side"] = side
-	params["ordType"] = "limit"
-	params["sz"] = sz
-	params["px"] = px
+// 批量下单
+func (self *Api) BatchOrder(params []*OrderParam) []*OrderRes {
+	var api = "/api/v5/trade/batch-orders"
+	var url = okApi + api
 
 	results := make([]*OrderRes, 0)
 	plat.Post(url, self.header("post", api, params), params, &results)

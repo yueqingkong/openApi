@@ -17,16 +17,6 @@ type Base struct {
 }
 
 var (
-	ccyStringMap = map[conset.CCY]string{conset.USD: "usd", conset.USDT: "usdt", // 稳定币
-		conset.BTC: "btc", conset.ETH: "eth", conset.LTC: "ltc", conset.DOT: "dot", conset.DOGE: "doge",
-		conset.LUNA: "luna", conset.TONCOIN: "toncoin", conset.SHIBI: "shib", conset.MATIC: "matic", conset.CRO: "cro", conset.BCH: "bch", conset.FTM: "ftm",
-		conset.XLM: "xlm", conset.AXS: "axs", conset.ONE: "one", conset.NEAR: "near", conset.ICP: "icp", conset.LEO: "leo", conset.IOTA: "iota",
-		conset.ADA: "ada", conset.FIL: "fil", conset.ATOM: "atom", conset.XRP: "xrp", conset.LINK: "link", conset.EOS: "eos", conset.UNI: "uni",
-		conset.CRV: "crv", conset.THETA: "theta", conset.ALGO: "algo", conset.ETC: "etc", conset.SAND: "sand", conset.SOL: "sol", conset.XTZ: "xtz",
-		conset.DASH: "dash", conset.TRX: "trx", conset.XMR: "xmr", conset.MANA: "mana", conset.SUSHI: "sushi", conset.ZEC: "zec", conset.SNX: "snx",
-		conset.AVAX: "avax", conset.WAVES: "waves", conset.AAVE: "aave", conset.BSV: "bsv", conset.XCH: "xch", conset.ENS: "ens", conset.COMP: "comp",
-		conset.EGLD: "egld"}
-
 	toCcyMap = map[string]conset.CCY{}
 )
 
@@ -40,16 +30,6 @@ func (self *Base) Init(strings []string) {
 	}
 }
 
-func (self *Base) ToCcy(ccy string) conset.CCY {
-	if len(toCcyMap) == 0 {
-		for k, v := range ccyStringMap {
-			toCcyMap[v] = k
-		}
-	}
-
-	return toCcyMap[ccy]
-}
-
 // base 交易货币
 // quote 计价货币(USD, USDT)
 //func (self *Base) instId(base conset.CCY, quote conset.CCY) string {
@@ -58,15 +38,16 @@ func (self *Base) ToCcy(ccy string) conset.CCY {
 
 // base 交易货币
 // quote 计价货币(USD, USDT)
-func (self *Base) instIds(base conset.CCY, quote conset.CCY, period conset.PERIOD) string {
-	if base == 0 || quote == 0 || period == 0 {
+func (self *Base) InstId(base conset.CCY, quote conset.CCY, period conset.PERIOD) string {
+	if base == "" || quote == "" || period == 0 {
 		return ""
 	}
 
-	if conset.SPOT == period {
-		return fmt.Sprintf("%s-%s", strings.ToUpper(ccyStringMap[base]), strings.ToUpper(ccyStringMap[quote]))
-	} else if conset.SWAP == period {
-		return fmt.Sprintf("%s-%s-%s", strings.ToUpper(ccyStringMap[base]), strings.ToUpper(ccyStringMap[quote]), strings.ToUpper(self.Period(period)))
+	switch period {
+	case conset.SPOT, conset.MARGIN:
+		return fmt.Sprintf("%s-%s", strings.ToUpper(string(base)), strings.ToUpper(string(quote)))
+	case conset.SWAP:
+		return fmt.Sprintf("%s-%s-%s", strings.ToUpper(string(base)), strings.ToUpper(string(quote)), strings.ToUpper(self.Period(period)))
 	}
 	return ""
 }
@@ -90,6 +71,8 @@ func (self *Base) Period(period conset.PERIOD) string {
 		s = "spot"
 	case conset.SWAP:
 		s = "swap"
+	case conset.MARGIN:
+		s = "margin"
 	case conset.WEEK:
 		s = "week"
 	case conset.WEEK_NEXT:
@@ -126,7 +109,7 @@ func TdMode(period conset.PERIOD) string {
 	switch period {
 	case conset.SPOT:
 		s = "cash"
-	case conset.SWAP:
+	case conset.SWAP, conset.MARGIN:
 		s = "isolated"
 	default:
 		s = "isolated"
@@ -165,7 +148,7 @@ func Side(period conset.PERIOD, direct conset.OPERATION) (string, string) {
 }
 
 func (self *Base) Pull(base conset.CCY, quote conset.CCY, period conset.PERIOD, times conset.TIMES, start time.Time) bool {
-	candles := self.Candles(self.instIds(base, quote, period), self.Times(times), self.before(start))
+	candles := self.Candles(self.InstId(base, quote, period), self.Times(times), self.before(start))
 
 	if len(candles) == 0 {
 		log.Printf("Pull : 同步完成")
@@ -192,7 +175,7 @@ func (self *Base) Pull(base conset.CCY, quote conset.CCY, period conset.PERIOD, 
 }
 
 func (self *Base) Price(base conset.CCY, quote conset.CCY, period conset.PERIOD) float32 {
-	tickers := self.Ticker(self.instIds(base, quote, period))
+	tickers := self.Ticker(self.InstId(base, quote, period))
 	if len(tickers) == 0 {
 		return 0.0
 	}
@@ -209,8 +192,12 @@ func (self *Base) UsdCny() float32 {
 	return util.Float32(rates[0].UsdCny)
 }
 
+func (self *Base) SupportCoin() *SupportCoinBody {
+	return self.Api.SupportCoin()
+}
+
 func (self *Base) FundingRate(base conset.CCY, quote conset.CCY) (float32, float32) {
-	rates := self.Api.FundingRate(self.instIds(base, quote, conset.SWAP))
+	rates := self.Api.FundingRate(self.InstId(base, quote, conset.SWAP))
 	if len(rates) == 0 {
 		return 0, 0
 	}
@@ -219,7 +206,7 @@ func (self *Base) FundingRate(base conset.CCY, quote conset.CCY) (float32, float
 }
 
 func (self *Base) Balance(c conset.CCY) float32 {
-	bs := self.balance(strings.ToUpper(ccyStringMap[c]))
+	bs := self.Api.balance(strings.ToUpper(string(c)))
 	if len(bs) == 0 {
 		return 0.0
 	}
@@ -228,7 +215,7 @@ func (self *Base) Balance(c conset.CCY) float32 {
 }
 
 func (self *Base) PullInstrument(period conset.PERIOD) {
-	instruments := self.Instrument(period, 0, 0)
+	instruments := self.Instrument(period, "", "")
 	for _, ins := range instruments {
 		instrument := &db.Instrument{}
 		instrument.CreateOrUpdate(self.Plat(), period, ins.InstID, ins.Uly, ins.InstFamily, ins.SettleCcy, ins.CtVal, ins.State)
@@ -236,28 +223,60 @@ func (self *Base) PullInstrument(period conset.PERIOD) {
 }
 
 func (self *Base) Instrument(period conset.PERIOD, base conset.CCY, quote conset.CCY) []*Instrument {
-	return self.Instruments(strings.ToUpper(self.Period(period)), "", self.instIds(base, quote, period))
+	return self.Api.Instruments(strings.ToUpper(self.Period(period)), "", self.InstId(base, quote, period))
 }
 
-func (self *Base) OrderInfos(base conset.CCY, quote conset.CCY, period conset.PERIOD, orderId string) (bool, *OrderInfo) {
-	infos := self.OrderInfo(self.instIds(base, quote, period), orderId)
-	if len(infos.Data) == 0 {
+func (self *Base) OrderInfo(base conset.CCY, quote conset.CCY, period conset.PERIOD, orderId string) (bool, *OrderInfo) {
+	infos := self.Api.OrderInfo(self.InstId(base, quote, period), orderId)
+	if len(infos) == 0 {
 		return false, nil
 	}
 
-	return infos.Code == "0", infos
+	return true, infos[0]
 }
 
-func (self *Base) Orders(base conset.CCY, quote conset.CCY, period conset.PERIOD, direct conset.OPERATION, price, sz float32) (bool, string) {
-	side, poside := Side(period, direct)
-	price = priceLimit(direct, price)
+//func (self *Base) Order(base conset.CCY, quote conset.CCY, period conset.PERIOD, direct conset.OPERATION, price, sz float32) (bool, string) {
+//	side, poside := Side(period, direct)
+//	price = priceLimit(direct, price)
+//
+//	orders := self.Api.Order(self.InstId(base, quote, period), TdMode(period), side, poside, price, sz)
+//	if len(orders) == 0 {
+//		return false, ""
+//	}
+//
+//	return orders[0].SCode == "0", orders[0].OrdID
+//}
 
-	orders := self.Order(self.instIds(base, quote, period), TdMode(period), side, poside, price, sz)
+func (self *Base) Order(base conset.CCY, quote conset.CCY, period conset.PERIOD, op conset.OPERATION, price, sz float32) (bool, string) {
+	orders := self.Api.Order((&OrderParam{}).Format(base, quote, period, op, price, sz))
 	if len(orders) == 0 {
 		return false, ""
 	}
 
 	return orders[0].SCode == "0", orders[0].OrdID
+}
+
+func (param *OrderParam) Format(bs conset.CCY, quote conset.CCY, period conset.PERIOD, op conset.OPERATION, price, sz float32) *OrderParam {
+	side, poside := Side(period, op)
+	price = priceLimit(op, price)
+
+	param.InstId = (&Base{}).InstId(bs, quote, period)
+	param.TdMode = TdMode(period)
+	param.Side = side
+	param.PosSide = poside
+	param.OrdType = "limit"
+	param.Px = price
+	param.Sz = sz
+	return param
+}
+
+func (self *Base) BatchOrder(params []*OrderParam) (bool, []*OrderRes) {
+	orders := self.Api.BatchOrder(params)
+	if len(orders) == 0 {
+		return false, nil
+	}
+
+	return orders[0].SCode == "0", orders
 }
 
 // limit 成交价格
@@ -272,12 +291,6 @@ func priceLimit(direct conset.OPERATION, price float32) float32 {
 	return price
 }
 
-func (self *Base) SubscribeTickers(symbols [][2]conset.CCY, period conset.PERIOD, f func(conset.CCY, conset.CCY, float32)) {
-	ids := make([]string, 0)
-	for _, symbol := range symbols {
-		inst := self.instIds(symbol[0], symbol[1], period)
-		ids = append(ids, inst)
-	}
-
-	self.WsTickers(ids, f)
+func (self *Base) SubscribeTickers(channel string, instIds []string, f func(conset.CCY, conset.CCY, interface{})) {
+	self.WsTickers(channel, instIds, f)
 }

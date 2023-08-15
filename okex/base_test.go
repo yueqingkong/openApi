@@ -1,6 +1,7 @@
 package okex
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/yueqingkong/openApi/conset"
 	"log"
@@ -14,11 +15,25 @@ func TestUsdCny(t *testing.T) {
 	log.Println(rate)
 }
 
+// go test -v -run TestInstrument
+func TestInstrument(t *testing.T) {
+	base := &Base{}
+	ins := base.Instrument(conset.MARGIN, "", "")
+	log.Println(ins)
+}
+
+// go test -v -run TestSupportCoin
+func TestSupportCoin(t *testing.T) {
+	base := &Base{}
+	body := base.SupportCoin()
+	t.Log(body)
+}
+
 // go test -v -run TestPull
 func TestPull(t *testing.T) {
 	base := &Base{}
 	base.Init([]string{"", "", ""})
-	inst := base.instIds(conset.BTC, conset.USD, conset.SWAP)
+	inst := base.InstId(conset.BTC, conset.USD, conset.SWAP)
 	candles := base.Candles(inst, "15m", "1675068300000")
 	t.Log(candles)
 }
@@ -28,7 +43,7 @@ func TestPrice(t *testing.T) {
 	base := &Base{}
 	base.Init([]string{"", "", ""})
 
-	pr := base.Price(conset.BTC, conset.USD, conset.SWAP)
+	pr := base.Price(conset.ETH, conset.USDT, conset.MARGIN)
 	t.Log(pr)
 }
 
@@ -38,25 +53,25 @@ func TestFundingRate(t *testing.T) {
 	base.Init([]string{"", "", ""})
 
 	rate, nextRate := base.FundingRate(conset.BTC, conset.USD)
-	t.Log(fmt.Sprintf("%.5f",rate), nextRate)
+	t.Log(fmt.Sprintf("%.5f", rate), nextRate)
 }
 
-// go test -v -run TestOrders
-func TestOrders(t *testing.T) {
+// go test -v -run TestODInfo
+func TestODInfo(t *testing.T) {
 	base := &Base{}
 	base.Init([]string{"", "", ""})
 
-	b, orderid := base.Orders(conset.BTC, conset.USDT, conset.SWAP, conset.SELL_HIGH, 23300, 1.0)
-	t.Log(b, orderid)
-}
-
-// go test -v -run TestOrderInfos
-func TestOrderInfos(t *testing.T) {
-	base := &Base{}
-	base.Init([]string{"", "", ""})
-
-	b, info := base.OrderInfos(conset.BCH, conset.USDT, conset.SWAP, "")
+	b, info := base.OrderInfo(conset.ETH, conset.USDT, conset.MARGIN, "611746420433305600")
 	t.Log(b, info)
+}
+
+// go test -v -run TestOrder
+func TestOrder(t *testing.T) {
+	base := &Base{}
+	base.Init([]string{"", "", ""})
+
+	b, orderid := base.Order(conset.ETH, conset.USDT, conset.SPOT, conset.SELL_HIGH, 1841, 0.01)
+	t.Log(b, orderid)
 }
 
 // go test -v -run TestSubscribeTickers
@@ -64,9 +79,12 @@ func TestSubscribeTickers(t *testing.T) {
 	base := &Base{}
 	base.Init([]string{"", "", ""})
 
-	ccies := [2]conset.CCY{conset.BTC, conset.USDT}
-	base.SubscribeTickers([][2]conset.CCY{ccies}, conset.SWAP, func(bas conset.CCY, quote conset.CCY, f float32) {
-		t.Log(base.instIds(bas, quote, conset.SWAP), f)
+	base.SubscribeTickers(CHANNEL_FUNDING_RATE, []string{"BTC-USDT-SWAP"}, func(bas conset.CCY, quote conset.CCY, i interface{}) {
+		bytes, _ := json.Marshal(i)
+		body := &FundingRateBody{}
+		json.Unmarshal(bytes, body)
+
+		t.Log(base.InstId(bas, quote, conset.SWAP), body)
 	})
 
 	c := make(chan bool)

@@ -6,6 +6,7 @@ import (
 	"github.com/yueqingkong/openApi/conset"
 	"github.com/yueqingkong/openApi/util"
 	"log"
+	"strings"
 	"time"
 	"xorm.io/builder"
 )
@@ -26,18 +27,6 @@ type Coin struct {
 	CreatedAt  time.Time `xorm:"created"`
 	UpdatedAt  time.Time `xorm:"updated"`
 }
-
-var (
-	ccyMap = map[conset.CCY]string{conset.USD: "usd", conset.USDT: "usdt", // 稳定币
-		conset.BTC: "btc", conset.ETH: "eth", conset.LTC: "ltc", conset.DOT: "dot", conset.DOGE: "doge",
-		conset.LUNA: "luna", conset.TONCOIN: "toncoin", conset.SHIBI: "shib", conset.MATIC: "matic", conset.CRO: "cro", conset.BCH: "bch", conset.FTM: "ftm",
-		conset.XLM: "xlm", conset.AXS: "axs", conset.ONE: "one", conset.NEAR: "near", conset.ICP: "icp", conset.LEO: "leo", conset.IOTA: "iota",
-		conset.ADA: "ada", conset.FIL: "fil", conset.ATOM: "atom", conset.XRP: "xrp", conset.LINK: "link", conset.EOS: "eos", conset.UNI: "uni",
-		conset.CRV: "crv", conset.THETA: "theta", conset.ALGO: "algo", conset.ETC: "etc", conset.SAND: "sand", conset.SOL: "sol", conset.XTZ: "xtz",
-		conset.DASH: "dash", conset.TRX: "trx", conset.XMR: "xmr", conset.MANA: "mana", conset.SUSHI: "sushi", conset.ZEC: "zec", conset.SNX: "snx",
-		conset.AVAX: "avax", conset.WAVES: "waves", conset.AAVE: "aave", conset.BSV: "bsv", conset.XCH: "xch", conset.ENS: "ens", conset.COMP: "comp",
-		conset.EGLD: "egld"}
-)
 
 func Plat(p conset.PLAT) string {
 	var s string
@@ -89,11 +78,11 @@ func Period(period conset.PERIOD) string {
 }
 
 func Symbol(base conset.CCY, quote conset.CCY) string {
-	if quote == 0 {
-		return ccyMap[base]
+	if quote == "" {
+		return fmt.Sprintf("%s", strings.ToLower(string(base)))
 	}
 
-	return fmt.Sprintf("%s_%s", ccyMap[base], ccyMap[quote])
+	return fmt.Sprintf("%s_%s", strings.ToLower(string(base)), strings.ToLower(string(quote)))
 }
 
 func (self *Coin) Create(pt conset.PLAT, base conset.CCY, quote conset.CCY, times conset.TIMES, open, close, high, low, volume float32, timetamp int64) error {

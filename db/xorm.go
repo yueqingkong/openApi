@@ -32,7 +32,11 @@ func ConnectSQL(name, user, host, port, password string) {
 		&Record{},
 		&AccountDay{},
 		&Indexs{},
-		&Instrument{})
+		&Instrument{},
+		&OLog{},
+		&Address{},
+		&AddressTransaction{},
+		&FundingRate{})
 	if err != nil {
 		log.Fatal("[MySql] 同步表失败", err)
 	}
