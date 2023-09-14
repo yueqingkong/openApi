@@ -197,6 +197,77 @@ func (self *Api) SupportCoin() *SupportCoinBody {
 	return inst
 }
 
+// 获取taker主动买入和卖出的交易量
+// period 5m/1H/1D
+func (self *Api) TakerVolume(ccy, instType, begin, end, period string) [][]string {
+	api := "/api/v5/rubik/stat/taker-volume"
+
+	params := make(map[string]string)
+	params["ccy"] = ccy
+	params["instType"] = instType
+	params["begin"] = begin
+	params["end"] = end
+	params["period"] = period
+	api = api + parseParams(params)
+
+	var url = okApi + api
+	inst := make([][]string, 0)
+	plat.Get(url, nil, &inst)
+	return inst
+}
+
+// 获取借入计价货币与借入交易货币的累计数额比值
+// period 5m/1H/1D
+func (self *Api) LoanRatio(ccy, begin, end, period string) [][]string {
+	api := "/api/v5/rubik/stat/margin/loan-ratio"
+
+	params := make(map[string]string)
+	params["ccy"] = ccy
+	params["begin"] = begin
+	params["end"] = end
+	params["period"] = period
+	api = api + parseParams(params)
+
+	var url = okApi + api
+	inst := make([][]string, 0)
+	plat.Get(url, nil, &inst)
+	return inst
+}
+
+// 获取交割永续净开多持仓用户数与净开空持仓用户数的比值。
+func (self *Api) SwapAccountRatio(ccy, begin, end, period string) [][]string {
+	api := "/api/v5/rubik/stat/contracts/long-short-account-ratio"
+
+	params := make(map[string]string)
+	params["ccy"] = ccy
+	params["begin"] = begin
+	params["end"] = end
+	params["period"] = period
+	api = api + parseParams(params)
+
+	var url = okApi + api
+	inst := make([][]string, 0)
+	plat.Get(url, nil, &inst)
+	return inst
+}
+
+// 获取交割永续的持仓量和交易量
+func (self *Api) InterestVolume(ccy, begin, end, period string) [][]string {
+	api := "/api/v5/rubik/stat/contracts/open-interest-volume"
+
+	params := make(map[string]string)
+	params["ccy"] = ccy
+	params["begin"] = begin
+	params["end"] = end
+	params["period"] = period
+	api = api + parseParams(params)
+
+	var url = okApi + api
+	inst := make([][]string, 0)
+	plat.Get(url, nil, &inst)
+	return inst
+}
+
 // 获取所有交易产品K线数据
 // 获取K线数据。K线数据按请求的粒度分组返回，K线数据每个粒度最多可获取最近1440条。
 // bar [1m/3m/5m/15m/30m/1H/2H/4H/6H/12H/1D/1W/1M/3M/6M/1Y]
@@ -249,7 +320,7 @@ func (self *Api) OrderInfo(instId, orderId string) []*OrderInfo {
 	api = api + parseParams(params)
 
 	var url = okApi + api
-	result := make([]*OrderInfo,0)
+	result := make([]*OrderInfo, 0)
 	plat.Get(url, self.header("get", api, nil), &result)
 	return result
 }
@@ -283,24 +354,25 @@ func (self *Api) setLeverage(instId, lever, mgnMode, posSide string) []*SetLever
 // 当币币/币币杠杆以市价买入时，指计价货币的数量。
 // 当币币/币币杠杆以市价卖出时，指交易货币的数量。
 // 当交割、永续、期权买入和卖出时，指合约张数。
-//func (self *Api) Order(instId, tdMode, side, posSide string, px, sz float32) []*OrderRes {
-//	var api = "/api/v5/trade/order"
-//	var url = okApi + api
 //
-//	params := make(map[string]interface{}, 0)
-//	params["instId"] = instId
-//	params["tdMode"] = tdMode
-//	params["posSide"] = posSide
+//	func (self *Api) Order(instId, tdMode, side, posSide string, px, sz float32) []*OrderRes {
+//		var api = "/api/v5/trade/order"
+//		var url = okApi + api
 //
-//	params["side"] = side
-//	params["ordType"] = "limit"
-//	params["sz"] = sz
-//	params["px"] = px
+//		params := make(map[string]interface{}, 0)
+//		params["instId"] = instId
+//		params["tdMode"] = tdMode
+//		params["posSide"] = posSide
 //
-//	results := make([]*OrderRes, 0)
-//	plat.Post(url, self.header("post", api, params), params, &results)
-//	return results
-//}
+//		params["side"] = side
+//		params["ordType"] = "limit"
+//		params["sz"] = sz
+//		params["px"] = px
+//
+//		results := make([]*OrderRes, 0)
+//		plat.Post(url, self.header("post", api, params), params, &results)
+//		return results
+//	}
 func (self *Api) Order(params *OrderParam) []*OrderRes {
 	var api = "/api/v5/trade/order"
 	var url = okApi + api

@@ -47,7 +47,7 @@ func (self *Base) InstId(base conset.CCY, quote conset.CCY, period conset.PERIOD
 	case conset.SPOT, conset.MARGIN:
 		return fmt.Sprintf("%s-%s", strings.ToUpper(string(base)), strings.ToUpper(string(quote)))
 	case conset.SWAP:
-		return fmt.Sprintf("%s-%s-%s", strings.ToUpper(string(base)), strings.ToUpper(string(quote)), strings.ToUpper(self.Period(period)))
+		return fmt.Sprintf("%s-%s-%s", strings.ToUpper(string(base)), strings.ToUpper(string(quote)), strings.ToUpper(db.Period(period)))
 	}
 	return ""
 }
@@ -62,46 +62,6 @@ func (self *Base) before(start time.Time) string {
 
 func (self *Base) Plat() conset.PLAT {
 	return conset.OKEX
-}
-
-func (self *Base) Period(period conset.PERIOD) string {
-	var s string
-	switch period {
-	case conset.SPOT:
-		s = "spot"
-	case conset.SWAP:
-		s = "swap"
-	case conset.MARGIN:
-		s = "margin"
-	case conset.WEEK:
-		s = "week"
-	case conset.WEEK_NEXT:
-		s = "week_next"
-	case conset.QUARTER:
-		s = "quarter"
-	case conset.QUARTER_NEXT:
-		s = "quarter_next"
-	}
-	return s
-}
-
-func (self *Base) Times(times conset.TIMES) string {
-	var s string
-	switch times {
-	case conset.MIN_15:
-		s = "15m"
-	case conset.MIN_30:
-		s = "30m"
-	case conset.H_1:
-		s = "1H"
-	case conset.H_6:
-		s = "6H"
-	case conset.H_12:
-		s = "12H"
-	case conset.D_1:
-		s = "1D"
-	}
-	return s
 }
 
 func TdMode(period conset.PERIOD) string {
@@ -148,7 +108,7 @@ func Side(period conset.PERIOD, direct conset.OPERATION) (string, string) {
 }
 
 func (self *Base) Pull(base conset.CCY, quote conset.CCY, period conset.PERIOD, times conset.TIMES, start time.Time) bool {
-	candles := self.Candles(self.InstId(base, quote, period), self.Times(times), self.before(start))
+	candles := self.Candles(self.InstId(base, quote, period), db.Times(times), self.before(start))
 
 	if len(candles) == 0 {
 		log.Printf("Pull : 同步完成")
@@ -196,6 +156,31 @@ func (self *Base) SupportCoin() *SupportCoinBody {
 	return self.Api.SupportCoin()
 }
 
+// times: [5m/1H/1D]
+func (self *Base) TakerVolume(base conset.CCY, period conset.PERIOD, start, end int64, times conset.TIMES) [][]string {
+	instType := "CONTRACTS"
+	if period == conset.SPOT {
+		instType = "SPOT"
+	}
+
+	return self.Api.TakerVolume(string(base), instType, strconv.FormatInt(start, 10), strconv.FormatInt(end, 10), db.Times(times))
+}
+
+// times: [5m/1H/1D]
+func (self *Base) LoanRatio(base conset.CCY, start, end int64, times conset.TIMES) [][]string {
+	return self.Api.LoanRatio(string(base), strconv.FormatInt(start, 10), strconv.FormatInt(end, 10), db.Times(times))
+}
+
+// times: [5m/1H/1D]
+func (self *Base) SwapAccountRatio(base conset.CCY, start, end int64, times conset.TIMES) [][]string {
+	return self.Api.SwapAccountRatio(string(base), strconv.FormatInt(start, 10), strconv.FormatInt(end, 10), db.Times(times))
+}
+
+// times: [5m/1H/1D]
+func (self *Base) InterestVolume(base conset.CCY, start, end int64, times conset.TIMES) [][]string {
+	return self.Api.InterestVolume(string(base), strconv.FormatInt(start, 10), strconv.FormatInt(end, 10), db.Times(times))
+}
+
 func (self *Base) FundingRate(base conset.CCY, quote conset.CCY) (float32, float32) {
 	rates := self.Api.FundingRate(self.InstId(base, quote, conset.SWAP))
 	if len(rates) == 0 {
@@ -223,7 +208,7 @@ func (self *Base) PullInstrument(period conset.PERIOD) {
 }
 
 func (self *Base) Instrument(period conset.PERIOD, base conset.CCY, quote conset.CCY) []*Instrument {
-	return self.Api.Instruments(strings.ToUpper(self.Period(period)), "", self.InstId(base, quote, period))
+	return self.Api.Instruments(strings.ToUpper(db.Period(period)), "", self.InstId(base, quote, period))
 }
 
 func (self *Base) OrderInfo(base conset.CCY, quote conset.CCY, period conset.PERIOD, orderId string) (bool, *OrderInfo) {
@@ -235,25 +220,13 @@ func (self *Base) OrderInfo(base conset.CCY, quote conset.CCY, period conset.PER
 	return true, infos[0]
 }
 
-//func (self *Base) Order(base conset.CCY, quote conset.CCY, period conset.PERIOD, direct conset.OPERATION, price, sz float32) (bool, string) {
-//	side, poside := Side(period, direct)
-//	price = priceLimit(direct, price)
-//
-//	orders := self.Api.Order(self.InstId(base, quote, period), TdMode(period), side, poside, price, sz)
-//	if len(orders) == 0 {
-//		return false, ""
-//	}
-//
-//	return orders[0].SCode == "0", orders[0].OrdID
-//}
-
-func (self *Base) Order(base conset.CCY, quote conset.CCY, period conset.PERIOD, op conset.OPERATION, price, sz float32) (bool, string) {
+func (self *Base) Order(base conset.CCY, quote conset.CCY, period conset.PERIOD, op conset.OPERATION, price, sz float32) (bool, *OrderRes) {
 	orders := self.Api.Order((&OrderParam{}).Format(base, quote, period, op, price, sz))
 	if len(orders) == 0 {
-		return false, ""
+		return false, nil
 	}
 
-	return orders[0].SCode == "0", orders[0].OrdID
+	return orders[0].SCode == "0", orders[0]
 }
 
 func (param *OrderParam) Format(bs conset.CCY, quote conset.CCY, period conset.PERIOD, op conset.OPERATION, price, sz float32) *OrderParam {

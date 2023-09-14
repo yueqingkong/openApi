@@ -56,6 +56,42 @@ func TestFundingRate(t *testing.T) {
 	t.Log(fmt.Sprintf("%.5f", rate), nextRate)
 }
 
+// go test -v -run TestTakerVolume
+func TestTakerVolume(t *testing.T) {
+	base := &Base{}
+	base.Init([]string{"", "", ""})
+
+	res := base.TakerVolume(conset.BTC, conset.SPOT, 1679155200000, 1694448000000, conset.D_1)
+	t.Log(fmt.Sprintf("%v", res))
+}
+
+// go test -v -run TestLoanRatio
+func TestLoanRatio(t *testing.T) {
+	base := &Base{}
+	base.Init([]string{"", "", ""})
+
+	res := base.LoanRatio(conset.BTC, 1679155200000, 1694448000000, conset.D_1)
+	t.Log(fmt.Sprintf("%v", res))
+}
+
+// go test -v -run TestSwapAccountRatio
+func TestSwapAccountRatio(t *testing.T) {
+	base := &Base{}
+	base.Init([]string{"", "", ""})
+
+	res := base.SwapAccountRatio(conset.BTC, 1679155200000, 1694448000000, conset.D_1)
+	t.Log(fmt.Sprintf("%v", res))
+}
+
+// go test -v -run TestInterestVolume
+func TestInterestVolume(t *testing.T) {
+	base := &Base{}
+	base.Init([]string{"", "", ""})
+
+	res := base.InterestVolume(conset.BTC, 0, 1694448000000, conset.D_1)
+	t.Log(fmt.Sprintf("%v", res))
+}
+
 // go test -v -run TestODInfo
 func TestODInfo(t *testing.T) {
 	base := &Base{}
