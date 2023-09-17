@@ -268,6 +268,40 @@ func (self *Api) InterestVolume(ccy, begin, end, period string) [][]string {
 	return inst
 }
 
+// 合约多空精英趋向指标
+func (self *Api) TopSentimentIndex(ccy, begin, num, period string) [][]string {
+	api := "/priapi/v5/rubik/stat/contracts/top-trader-sentiment-index"
+
+	params := make(map[string]string)
+	params["ccy"] = ccy
+	params["t"] = begin
+	params["num"] = num
+	params["period"] = period
+	api = api + parseParams(params)
+
+	var url = okApi + api
+	inst := make([][]string, 0)
+	plat.Get(url, nil, &inst)
+	return inst
+}
+
+// 精英多空平均持仓比例
+func (self *Api) TopAverageIndex(ccy, begin, num, period string) [][]string {
+	api := "/priapi/v5/rubik/stat/contracts/top-trader-average-margin"
+
+	params := make(map[string]string)
+	params["ccy"] = ccy
+	params["t"] = begin
+	params["num"] = num
+	params["period"] = period
+	api = api + parseParams(params)
+
+	var url = okApi + api
+	inst := make([][]string, 0)
+	plat.Get(url, nil, &inst)
+	return inst
+}
+
 // 获取所有交易产品K线数据
 // 获取K线数据。K线数据按请求的粒度分组返回，K线数据每个粒度最多可获取最近1440条。
 // bar [1m/3m/5m/15m/30m/1H/2H/4H/6H/12H/1D/1W/1M/3M/6M/1Y]

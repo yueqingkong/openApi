@@ -92,6 +92,24 @@ func TestInterestVolume(t *testing.T) {
 	t.Log(fmt.Sprintf("%v", res))
 }
 
+// go test -v -run TestTopSentimentIndex
+func TestTopSentimentIndex(t *testing.T) {
+	base := &Base{}
+	base.Init([]string{"", "", ""})
+
+	res := base.TopSentimentIndex(conset.BTC, 1694797670, 2, conset.D_1)
+	t.Log(fmt.Sprintf("%v", res))
+}
+
+// go test -v -run TestTopAverageIndex
+func TestTopAverageIndex(t *testing.T) {
+	base := &Base{}
+	base.Init([]string{"", "", ""})
+
+	res := base.TopAverageIndex(conset.BTC, 1694797670, 2, conset.D_1)
+	t.Log(fmt.Sprintf("%v", res))
+}
+
 // go test -v -run TestODInfo
 func TestODInfo(t *testing.T) {
 	base := &Base{}

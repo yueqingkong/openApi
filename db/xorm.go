@@ -40,7 +40,9 @@ func ConnectSQL(name, user, host, port, password string) {
 		&TakeVolume{},
 		&LoanRatio{},
 		&AccountRate{},
-		&InterestVolume{})
+		&InterestVolume{},
+		&TopSentimentIndex{},
+		&TopAverageIndex{})
 	if err != nil {
 		log.Fatal("[MySql] 同步表失败", err)
 	}

@@ -181,6 +181,14 @@ func (self *Base) InterestVolume(base conset.CCY, start, end int64, times conset
 	return self.Api.InterestVolume(string(base), strconv.FormatInt(start, 10), strconv.FormatInt(end, 10), db.Times(times))
 }
 
+func (self *Base) TopSentimentIndex(base conset.CCY, start, num int64, times conset.TIMES) [][]string {
+	return self.Api.TopSentimentIndex(string(base), strconv.FormatInt(start, 10), strconv.FormatInt(num, 10), db.Times(times))
+}
+
+func (self *Base) TopAverageIndex(base conset.CCY, start, num int64, times conset.TIMES) [][]string {
+	return self.Api.TopAverageIndex(string(base), strconv.FormatInt(start, 10), strconv.FormatInt(num, 10), db.Times(times))
+}
+
 func (self *Base) FundingRate(base conset.CCY, quote conset.CCY) (float32, float32) {
 	rates := self.Api.FundingRate(self.InstId(base, quote, conset.SWAP))
 	if len(rates) == 0 {
