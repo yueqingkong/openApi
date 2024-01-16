@@ -157,7 +157,15 @@ func (self *Coin) LastTime(pt conset.PLAT, base conset.CCY, quote conset.CCY, ti
 			return false, time.Time{}
 		}
 	} else if times == conset.D_1 {
-		if diffHours < 48 {
+		if diffHours < 24*2 {
+			return false, time.Time{}
+		}
+	} else if times == conset.W_1 {
+		if diffHours < 7*24*2 {
+			return false, time.Time{}
+		}
+	} else if times == conset.W_1 {
+		if diffHours < 31*24*2 {
 			return false, time.Time{}
 		}
 	}
