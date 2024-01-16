@@ -54,6 +54,10 @@ func Times(times conset.TIMES) string {
 		s = "12H"
 	case conset.D_1:
 		s = "1D"
+	case conset.W_1:
+		s = "1W"
+	case conset.M_1:
+		s = "1M"
 	}
 	return s
 }
