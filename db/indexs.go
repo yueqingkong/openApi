@@ -46,11 +46,13 @@ func (self *Indexs) IndexLast(name string, bs, quote conset.CCY) (*Indexs, error
 	return indexs, nil
 }
 
-func (self *Indexs) Create(pt conset.PLAT, name string, bs conset.CCY, quote conset.CCY, start time.Time, short, long, low, high, atr float32) error {
-	record := &Indexs{Plat: Plat(pt), Name: name, Symbol: Symbol(bs, quote), Date: util.TimeFormatString(start),
-		P1: short, P2: long, P3: low, P4: high, P5: atr}
+func (self *Indexs) Create(pt conset.PLAT, name string, bs conset.CCY, quote conset.CCY, start time.Time) error {
+	self.Plat = Plat(pt)
+	self.Name = name
+	self.Symbol = Symbol(bs, quote)
+	self.Date = util.TimeFormatString(start)
 
-	_, err := Engine().InsertOne(record)
+	_, err := Engine().InsertOne(self)
 	return err
 }
 
@@ -79,7 +81,7 @@ func (self *Indexs) IndexGetCreate(pt conset.PLAT, name string, bs conset.CCY, q
 		integerHour := more - more%timeDif
 		indexDate = indexDate.Add(time.Duration(integerHour) * time.Hour)
 
-		if err = self.Create(pt, name, bs, quote, indexDate, s, l, low, high, atr); err != nil {
+		if err = self.Create(pt, name, bs, quote, indexDate); err != nil {
 			log.Printf("%s  IndexCreate err: %v", name, err)
 		}
 
