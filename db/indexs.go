@@ -19,6 +19,7 @@ type Indexs struct {
 	P3        float32   `xorm:"p_3"`
 	P4        float32   `xorm:"p_4"`
 	P5        float32   `xorm:"p_5"`
+	Param     string    `xorm:"Text"`
 	CreatedAt time.Time `xorm:"created"`
 	UpdatedAt time.Time `xorm:"updated"`
 }
