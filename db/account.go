@@ -2,25 +2,27 @@ package db
 
 import (
 	"errors"
-	"github.com/yueqingkong/openApi/conset"
 	"time"
+
+	"github.com/yueqingkong/openApi/conset"
 	"xorm.io/builder"
 )
 
 type Account struct {
 	Id        int64
-	Name      string    `xorm:"varchar(255) unique(n-p-s)"` // 名称
-	Plat      string    `xorm:"varchar(255) unique(n-p-s)"` // 平台名称
-	Symbol    string    `xorm:"varchar(255) unique(n-p-s)"` // Token
-	Used      float32   `xorm:"float"`                      // 总值
-	Total     float32   `xorm:"float"`                      // 总值
+	Name      string    `xorm:"varchar(255) unique(n-p-s)"`
+	Plat      string    `xorm:"varchar(255) unique(n-p-s)"`
+	Symbol    string    `xorm:"varchar(255) unique(n-p-s)"`
+	Used      float32   `xorm:"float"`
+	Available float32   `xorm:"float"`
+	Total     float32   `xorm:"float"`
 	CreatedAt time.Time `xorm:"created"`
 	UpdatedAt time.Time `xorm:"updated"`
 }
 
 func (self *Account) Inserts(pt conset.PLAT, base conset.CCY, quote conset.CCY) error {
 	self.Plat = Plat(pt)
-	self.Symbol = Symbol(base,quote)
+	self.Symbol = Symbol(base, quote)
 
 	_, err := Engine().InsertOne(self)
 	return err
@@ -28,7 +30,7 @@ func (self *Account) Inserts(pt conset.PLAT, base conset.CCY, quote conset.CCY) 
 
 func (self *Account) Account(pt conset.PLAT, base conset.CCY, quote conset.CCY) error {
 	self.Plat = Plat(pt)
-	self.Symbol = Symbol(base,quote)
+	self.Symbol = Symbol(base, quote)
 
 	if b, err := Engine().Get(self); err != nil || !b {
 		return errors.New("get")

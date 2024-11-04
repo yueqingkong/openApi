@@ -3,11 +3,12 @@ package db
 import (
 	"errors"
 	"fmt"
-	"github.com/yueqingkong/openApi/conset"
-	"github.com/yueqingkong/openApi/util"
 	"log"
 	"strings"
 	"time"
+
+	"github.com/yueqingkong/openApi/conset"
+	"github.com/yueqingkong/openApi/util"
 	"xorm.io/builder"
 )
 
@@ -35,6 +36,8 @@ func Plat(p conset.PLAT) string {
 		s = "okex"
 	case conset.QKL123:
 		s = "qkl123"
+	case conset.COIN_MARKET_CAP:
+		s = "coin_market_cap"
 	}
 	return s
 }
@@ -69,6 +72,8 @@ func Period(period conset.PERIOD) string {
 		s = "spot"
 	case conset.SWAP:
 		s = "swap"
+	case conset.MARGIN:
+		s = "margin"
 	case conset.WEEK:
 		s = "week"
 	case conset.WEEK_NEXT:

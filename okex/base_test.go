@@ -3,9 +3,10 @@ package okex
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/yueqingkong/openApi/conset"
 	"log"
 	"testing"
+
+	"github.com/yueqingkong/openApi/conset"
 )
 
 // go test -v -run TestUsdCny
@@ -18,7 +19,8 @@ func TestUsdCny(t *testing.T) {
 // go test -v -run TestInstrument
 func TestInstrument(t *testing.T) {
 	base := &Base{}
-	ins := base.Instrument(conset.MARGIN, "", "")
+	ins := base.Instrument(conset.SPOT, "", "")
+
 	log.Println(ins)
 }
 

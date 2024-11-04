@@ -31,8 +31,18 @@ func ZDollar(symbol conset.CCY) float32 {
 }
 
 // 支付手续费
-func PayFee(price float32, size, value float32) float32 {
-	return value / price * size * 0.0005
+// 用户等级 lv1 吃单费率 0.05%，挂单费率 0.02%
+// 币本位合约开仓手续费=面值*开仓张数/开仓价格*手续费费率
+// 币本位合约平仓手续费=面值*平仓张数/平仓价格*手续费费率
+// USDT合约开仓手续费=面值*开仓张数*开仓价格*手续费费率
+// USDT合约平仓手续费=面值*平仓张数*平仓价格*手续费费率
+func PayFee(price, size, value float32, fee ...float32) float32 {
+	realFee := float32(0.0005)
+	if len(fee) > 0 {
+		realFee = fee[0]
+	}
+
+	return value / price * size * realFee
 }
 
 // 币本位收益 反向合约
