@@ -1,6 +1,10 @@
 package util
 
-import "math"
+import (
+	"crypto/rand"
+	"encoding/base64"
+	"math"
+)
 
 // 绝对值
 func Abs(i float32) float32 {
@@ -65,4 +69,14 @@ func SqrtN64(m float64, n float64) float64 {
 		z = z - (math.Pow(z, n)-m)/(n*math.Pow(z, n-1))
 	}
 	return z
+}
+
+// 随机数
+func Random(length int) (string, error) {
+	bytes := make([]byte, length)
+	_, err := rand.Read(bytes)
+	if err != nil {
+		return "", err
+	}
+	return base64.RawStdEncoding.EncodeToString(bytes)[:length], nil
 }

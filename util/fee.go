@@ -1,31 +1,73 @@
 package util
 
-import "github.com/yueqingkong/openApi/conset"
+import (
+	"github.com/yueqingkong/openApi/conset"
+)
+
+// coin/u -> 张
+func Size(bs, quote conset.CCY, period conset.PERIOD, price float32, buyunit float32) float32 {
+	if price == 0 || buyunit == 0 {
+		return 0
+	}
+
+	var amount float32
+	switch period {
+	case conset.SPOT: // 现货
+		// 仅u本位
+		amount = buyunit / price
+	case conset.SWAP:
+		switch quote {
+		case conset.USD: // 币本位
+			amount = UsdSize(price, buyunit, CcyValue(bs, quote))
+		case conset.USDT: // u本位
+			amount = UsdtSize(price, buyunit, CcyValue(bs, quote))
+		}
+	}
+	return amount
+}
 
 // token - > 张数
 // 保证金*币的价格*杠杆倍数／合约面值=可开张数
-func BuySize(price float32, buyunit float32, value float32) float32 {
+func UsdSize(price float32, buyunit float32, ccyValue float32) float32 {
 	var size float32
-	if buyunit == 0.0 {
-		size = 0
+	amout := price * buyunit / ccyValue
+	if amout < 1.0 {
+		size = 1.0
 	} else {
-		amout := price * buyunit / value
-		if amout < 1.0 {
-			size = 1.0
-		} else {
-			size = Floor(amout)
-		}
+		size = Floor(amout)
 	}
 	return size
 }
 
-// 一张 代表的面纸
-func ZDollar(symbol conset.CCY) float32 {
-	var v float32
-	if symbol == conset.BTC {
-		v = 100.0
+func UsdtSize(price float32, buyunit float32, ccyValue float32) float32 {
+	var size float32
+	amout := buyunit / price / ccyValue
+	if amout < 1.0 {
+		size = 1.0
 	} else {
-		v = 10.0
+		size = Floor(amout)
+	}
+	return size
+}
+
+// 面值
+func CcyValue(bs, quote conset.CCY) float32 {
+	var v float32
+	switch quote {
+	case conset.USD:
+		switch bs {
+		case conset.BTC:
+			v = 100.0
+		default:
+			v = 10.0
+		}
+	case conset.USDT:
+		switch bs {
+		case conset.BTC:
+			v = 0.01
+		default:
+			v = 0.1
+		}
 	}
 	return v
 }
@@ -45,10 +87,20 @@ func PayFee(price, size, value float32, fee ...float32) float32 {
 	return value / price * size * realFee
 }
 
-// 币本位收益 反向合约
+// 合约收益
+func Profit(bs, quote conset.CCY, op conset.OPERATION, price float32, lastprice float32, size float32) float32 {
+	var amount float32
+	if quote == conset.USD {
+		amount = UsdProfit(op, price, lastprice, size, CcyValue(bs, quote))
+	} else if quote == conset.USDT {
+		amount = UsdtProfit(op, price, lastprice, size, CcyValue(bs, quote))
+	}
+	return amount
+}
+
 // 多仓收益=面值*开仓张数（1／开仓价格-1／平仓价格）
 // 空仓收益=面值*开仓张数（1／平仓价格-1／开仓价格）
-func Profit(op conset.OPERATION, price float32, lastprice float32, size, value float32) float32 {
+func UsdProfit(op conset.OPERATION, price float32, lastprice float32, size, value float32) float32 {
 	var profit float32
 	if op == conset.BUY_HIGH || op == conset.SELL_HIGH {
 		profit = (value/lastprice - value/price) * size
