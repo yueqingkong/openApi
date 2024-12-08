@@ -2,13 +2,14 @@ package okex
 
 import (
 	"fmt"
-	"github.com/yueqingkong/openApi/conset"
-	"github.com/yueqingkong/openApi/db"
-	"github.com/yueqingkong/openApi/util"
 	"log"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/yueqingkong/openApi/conset"
+	"github.com/yueqingkong/openApi/db"
+	"github.com/yueqingkong/openApi/util"
 )
 
 type Base struct {
@@ -228,8 +229,8 @@ func (self *Base) OrderInfo(base conset.CCY, quote conset.CCY, period conset.PER
 	return true, infos[0]
 }
 
-func (self *Base) Order(base conset.CCY, quote conset.CCY, period conset.PERIOD, op conset.OPERATION, price, sz float32) (bool, *OrderRes) {
-	orders := self.Api.Order((&OrderParam{}).Format(base, quote, period, op, price, sz))
+func (self *Base) Order(base conset.CCY, quote conset.CCY, period conset.PERIOD, op conset.OPERATION, price, sz, rate float32) (bool, *OrderRes) {
+	orders := self.Api.Order((&OrderParam{}).Format(base, quote, period, op, price, sz, rate))
 	if len(orders) == 0 {
 		return false, nil
 	}
@@ -237,9 +238,9 @@ func (self *Base) Order(base conset.CCY, quote conset.CCY, period conset.PERIOD,
 	return orders[0].SCode == "0", orders[0]
 }
 
-func (param *OrderParam) Format(bs conset.CCY, quote conset.CCY, period conset.PERIOD, op conset.OPERATION, price, sz float32) *OrderParam {
+func (param *OrderParam) Format(bs conset.CCY, quote conset.CCY, period conset.PERIOD, op conset.OPERATION, price, sz, rate float32) *OrderParam {
 	side, poside := Side(period, op)
-	price = priceLimit(op, price)
+	price = priceLimit(op, price, rate)
 
 	param.InstId = (&Base{}).InstId(bs, quote, period)
 	param.TdMode = TdMode(period)
@@ -261,8 +262,11 @@ func (self *Base) BatchOrder(params []*OrderParam) (bool, []*OrderRes) {
 }
 
 // limit 成交价格
-func priceLimit(direct conset.OPERATION, price float32) float32 {
-	rate := float32(0.01)
+func priceLimit(direct conset.OPERATION, price, rate float32) float32 {
+	if rate == 0 {
+		rate = float32(0.01)
+	}
+
 	switch direct {
 	case conset.BUY_HIGH, conset.SELL_LOW:
 		price = price * (1.0 + rate)

@@ -126,7 +126,7 @@ func TestOrder(t *testing.T) {
 	base := &Base{}
 	base.Init([]string{"", "", ""})
 
-	b, orderid := base.Order(conset.ETH, conset.USDT, conset.SPOT, conset.SELL_HIGH, 1841, 0.01)
+	b, orderid := base.Order(conset.ETH, conset.USDT, conset.SPOT, conset.SELL_HIGH, 1841, 0.01, 0.01)
 	t.Log(b, orderid)
 }
 

@@ -2,10 +2,11 @@ package db
 
 import (
 	"errors"
-	"github.com/yueqingkong/openApi/conset"
-	"github.com/yueqingkong/openApi/util"
 	"log"
 	"time"
+
+	"github.com/yueqingkong/openApi/conset"
+	"github.com/yueqingkong/openApi/util"
 )
 
 type Indexs struct {
@@ -60,6 +61,9 @@ func (self *Indexs) IndexGetCreate(pt conset.PLAT, name string, bs conset.CCY, q
 	coin := &Coin{}
 	lastCoin, _ := coin.Last(pt, bs, quote, times)
 	indexs, err := self.IndexLast(name, bs, quote)
+	if err != nil {
+		log.Printf("IndexGetCreate err: %v", err)
+	}
 
 	var timeDif int32
 	if times == conset.H_4 {
@@ -72,8 +76,11 @@ func (self *Indexs) IndexGetCreate(pt conset.PLAT, name string, bs conset.CCY, q
 		timeDif = 24
 	}
 
+	diff := lastCoin.CreateTime.Add(time.Duration(timeDif) * time.Hour).Sub(util.StringToTime(indexs.Date))
+	log.Printf("IndexGetCreate diff: %v", diff.String())
+
 	// lastCoin.CreateTime 会比 indexs.Date 慢一个周期
-	if err != nil || lastCoin.CreateTime.Add(time.Duration(timeDif)*time.Hour).Sub(util.StringToTime(indexs.Date)) > time.Duration(10)*time.Second {
+	if err != nil || diff > time.Duration(10)*time.Second {
 		s, l, low, high, atr := fc()
 
 		indexDate := time.Date(start.Year(), start.Month(), start.Day(), 0, 0, 0, 0, start.Location())
@@ -81,6 +88,12 @@ func (self *Indexs) IndexGetCreate(pt conset.PLAT, name string, bs conset.CCY, q
 		integerHour := more - more%timeDif
 		indexDate = indexDate.Add(time.Duration(integerHour) * time.Hour)
 
+		indexs.Id = 0
+		indexs.P1 = s
+		indexs.P2 = l
+		indexs.P3 = low
+		indexs.P4 = high
+		indexs.P5 = atr
 		if err = self.Create(pt, name, bs, quote, indexDate); err != nil {
 			log.Printf("%s  IndexCreate err: %v", name, err)
 		}
