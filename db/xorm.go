@@ -2,16 +2,17 @@ package db
 
 import (
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
 	"xorm.io/xorm"
 )
 
 var engine *xorm.Engine
 
 // 连接数据库
-func ConnectSQL(name, user, host, port, password string) {
+func ConnectSQL(name, user, host, port, password string, showSQL bool) {
 	var err error
 
 	// mysql配置
@@ -23,7 +24,7 @@ func ConnectSQL(name, user, host, port, password string) {
 		log.Fatal("[MySql] 连接失败,", err)
 	}
 
-	engine.ShowSQL(false)
+	engine.ShowSQL(showSQL)
 	engine.DatabaseTZ = time.Local
 	engine.TZLocation = time.Local
 	err = engine.Sync2(
