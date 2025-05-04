@@ -11,10 +11,10 @@ import (
 
 type Indexs struct {
 	Id        int64
-	Plat      string    `xorm:"varchar(255) unique(p-n-s-d)"` // 平台名称
-	Name      string    `xorm:"varchar(255) unique(p-n-s-d)"` // 指标名称
-	Symbol    string    `xorm:"varchar(255) unique(p-n-s-d)"` // 币种
-	Date      string    `xorm:"varchar(255) unique(p-n-s-d)"` // 格式化时间
+	Plat      string    `xorm:"varchar(255) unique(p-n-s-d) index(p-n-s)"` // 平台名称
+	Name      string    `xorm:"varchar(255) unique(p-n-s-d) index(p-n-s)"` // 指标名称
+	Symbol    string    `xorm:"varchar(255) unique(p-n-s-d) index(p-n-s)"` // 币种
+	Date      string    `xorm:"varchar(255) unique(p-n-s-d)"`              // 格式化时间
 	P1        float32   `xorm:"p_1"`
 	P2        float32   `xorm:"p_2"`
 	P3        float32   `xorm:"p_3"`
