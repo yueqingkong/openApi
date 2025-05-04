@@ -36,8 +36,8 @@ func (self *Indexs) Get(pt conset.PLAT, name string, bs conset.CCY, quote conset
 	return indexs, nil
 }
 
-func (self *Indexs) IndexLast(name string, bs, quote conset.CCY) (*Indexs, error) {
-	indexs := &Indexs{Name: name, Symbol: Symbol(bs, quote)}
+func (self *Indexs) IndexLast(pt conset.PLAT, name string, bs, quote conset.CCY) (*Indexs, error) {
+	indexs := &Indexs{Plat: Plat(pt), Name: name, Symbol: Symbol(bs, quote)}
 	if b, err := Engine().Desc("date").Get(indexs); err != nil {
 		return nil, err
 	} else if !b {
@@ -60,7 +60,7 @@ func (self *Indexs) Create(pt conset.PLAT, name string, bs conset.CCY, quote con
 func (self *Indexs) IndexGetCreate(pt conset.PLAT, name string, bs conset.CCY, quote conset.CCY, times conset.TIMES, start time.Time, fc func() (float32, float32, float32, float32, float32)) (float32, float32, float32, float32, float32) {
 	coin := &Coin{}
 	lastCoin, _ := coin.Last(pt, bs, quote, times)
-	indexs, err := self.IndexLast(name, bs, quote)
+	indexs, err := self.IndexLast(pt, name, bs, quote)
 	if err != nil {
 		log.Printf("IndexGetCreate err: %v", err)
 	}
