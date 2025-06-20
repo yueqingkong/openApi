@@ -56,3 +56,11 @@ func Int32(str string) int32 {
 func Int32ToFloat(i int32) float32 {
 	return float32(i)
 }
+
+// 标签格式化
+func TagFormat(b bool) string {
+	if b {
+		return "✅"
+	}
+	return "❌"
+}

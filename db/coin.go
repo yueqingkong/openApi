@@ -15,16 +15,17 @@ import (
 // Coin K线数据
 type Coin struct {
 	Id         int64
-	Plat       string    `xorm:"plat varchar(255) unique(pl-time) index(pl-sy-t) index(p-s-t-c)"`
-	Symbol     string    `xorm:"symbol varchar(255) unique(pl-time) index(pl-sy-t) index(p-s-t-c)"`
-	Times      string    `xorm:"times varchar(255) unique(pl-time) index(pl-sy-t) index(p-s-t-c)"` // 时间间隔
+	Plat       string    `xorm:"plat unique(p-p-s-t-c)"`
+	Period     string    `xorm:"period unique(p-p-s-t-c)"` // spot/swap
+	Symbol     string    `xorm:"symbol unique(p-p-s-t-c)"`
+	Times      string    `xorm:"times unique(p-p-s-t-c)"` // 时间间隔
 	Open       float32   `xorm:"float"`
 	Close      float32   `xorm:"float"`
 	High       float32   `xorm:"float"`
 	Low        float32   `xorm:"float"`
 	Volume     float32   `xorm:"float"`
-	Timestamp  int64     `json:"time_stamp" xorm:"bigint time_stamp index unique(pl-time)"` // 毫秒
-	CreateTime time.Time `json:"create_time" xorm:"create_time index(p-s-t-c)"`
+	Timestamp  int64     `json:"time_stamp" xorm:"bigint unique(p-p-s-t-c)"` // 毫秒
+	CreateTime time.Time `json:"create_time" xorm:"create_time"`
 	CreatedAt  time.Time `xorm:"created"`
 	UpdatedAt  time.Time `xorm:"updated"`
 }
@@ -96,82 +97,70 @@ func Symbol(base conset.CCY, quote conset.CCY) string {
 	return fmt.Sprintf("%s_%s", strings.ToLower(string(base)), strings.ToLower(string(quote)))
 }
 
-func (self *Coin) Create(pt conset.PLAT, base conset.CCY, quote conset.CCY, times conset.TIMES, open, close, high, low, volume float32, timetamp int64) error {
-	coin := &Coin{
-		Plat:       Plat(pt),
-		Symbol:     Symbol(base, quote),
-		Times:      Times(times),
-		Open:       open,
-		Close:      close,
-		High:       high,
-		Low:        low,
-		Volume:     volume,
-		Timestamp:  timetamp,
-		CreateTime: util.SecondsTime(timetamp / 1000),
+func (self *Coin) Create() error {
+	if _, err := Engine().InsertOne(self); err != nil {
+		return err
 	}
-
-	_, err := Engine().InsertOne(coin)
-	return err
+	return nil
 }
 
-func (self *Coin) Last(pt conset.PLAT, base conset.CCY, quote conset.CCY, times conset.TIMES) (*Coin, error) {
-	coin := &Coin{Plat: Plat(pt), Symbol: Symbol(base, quote), Times: Times(times)}
-	if b, err := Engine().Desc("create_time").Get(coin); err != nil || !b {
-		return nil, errors.New("get")
+func (self *Coin) Last() error {
+	if b, err := Engine().Desc("create_time").Get(self); err != nil || !b {
+		return errors.New("get")
 	}
-
-	return coin, nil
+	return nil
 }
 
-func (self *Coin) LastTime(pt conset.PLAT, base conset.CCY, quote conset.CCY, times conset.TIMES) (bool, time.Time) {
+func (self *Coin) LastTime() (bool, time.Time) {
 	var startTime time.Time
 
-	coin := &Coin{Plat: Plat(pt), Symbol: Symbol(base, quote), Times: Times(times)}
-	if nil == coin.last() {
-		startTime = coin.CreateTime
+	// coin := &Coin{Plat: self.Plat, Symbol: self.Symbol, Times: self.Times}
+	if nil == self.last() {
+		startTime = self.CreateTime
 	}
 
 	// 最后一条记录是昨天的
 	diffHours := time.Now().Sub(startTime).Hours()
 
 	// 是否最新的数据
-	if times == conset.MIN_15 {
+	switch self.Times {
+	case Times(conset.MIN_15):
 		if diffHours < 0.5 {
 			return false, time.Time{}
 		}
-	} else if times == conset.MIN_30 {
+	case Times(conset.MIN_30):
 		if diffHours < 1 {
 			return false, time.Time{}
 		}
-	} else if times == conset.H_1 {
+	case Times(conset.H_1):
 		if diffHours < 2 {
 			return false, time.Time{}
 		}
-	} else if times == conset.H_2 {
+	case Times(conset.H_2):
 		if diffHours < 4 {
 			return false, time.Time{}
 		}
-	} else if times == conset.H_4 {
+	case Times(conset.H_4):
 		if diffHours < 8 {
 			return false, time.Time{}
 		}
-	} else if times == conset.H_6 {
+	case Times(conset.H_6):
 		if diffHours < 12 {
 			return false, time.Time{}
 		}
-	} else if times == conset.H_12 {
+	case Times(conset.H_12):
 		if diffHours < 24 {
 			return false, time.Time{}
 		}
-	} else if times == conset.D_1 {
+	case Times(conset.D_1):
 		if diffHours < 24*2 {
 			return false, time.Time{}
 		}
-	} else if times == conset.W_1 {
+	case Times(conset.W_1):
 		if diffHours < 7*24*2 {
 			return false, time.Time{}
 		}
-	} else if times == conset.W_1 {
+	case Times(conset.M_1):
 		if diffHours < 31*24*2 {
 			return false, time.Time{}
 		}
@@ -192,22 +181,11 @@ func (self *Coin) last() error {
 	return nil
 }
 
-func (self *Coin) All(pt conset.PLAT, base conset.CCY, quote conset.CCY, times conset.TIMES, start time.Time) ([]*Coin, error) {
-	coins := make([]*Coin, 0)
-
-	sql, args, _ := builder.ToSQL(builder.Gte{"create_time": start})
-	if err := Engine().Where(sql, args...).Asc("create_time").Find(&coins, &Coin{Plat: Plat(pt), Symbol: Symbol(base, quote), Times: Times(times)}); err != nil {
-		return nil, err
-	}
-
-	return coins, nil
-}
-
-func (self *Coin) Lasts(pt conset.PLAT, base conset.CCY, quote conset.CCY, times conset.TIMES, limit int, end time.Time) ([]Coin, error) {
+func (self *Coin) Lasts(limit int, end time.Time) ([]Coin, error) {
 	coins := make([]Coin, 0)
 
 	sql, args, _ := builder.ToSQL(builder.Lt{"create_time": end})
-	if err := Engine().Where(sql, args...).Desc("create_time").Limit(limit).Find(&coins, &Coin{Plat: Plat(pt), Symbol: Symbol(base, quote), Times: Times(times)}); err != nil {
+	if err := Engine().Where(sql, args...).Desc("create_time").Limit(limit).Find(&coins, self); err != nil {
 		return nil, err
 	}
 
@@ -221,8 +199,8 @@ func (self *Coin) Lasts(pt conset.PLAT, base conset.CCY, quote conset.CCY, times
 
 // 移动平均线
 // N日移动平均线=N日收市价之和/N
-func (self *Coin) MA(pt conset.PLAT, base conset.CCY, quote conset.CCY, times conset.TIMES, limit int, end time.Time) float32 {
-	if coins, err := self.Lasts(pt, base, quote, times, limit, end); err != nil {
+func (self *Coin) MA(limit int, end time.Time) float32 {
+	if coins, err := self.Lasts(limit, end); err != nil {
 		return 0.0
 	} else {
 		var total float32
@@ -237,8 +215,8 @@ func (self *Coin) MA(pt conset.PLAT, base conset.CCY, quote conset.CCY, times co
 
 // 平滑移动平均线
 // EMA(12) = [2/(12+1)]*今日收盘价+[11/(12+1)]*作日EMA(12)
-func (self *Coin) EMA(pt conset.PLAT, base conset.CCY, quote conset.CCY, times conset.TIMES, limit int, end time.Time) float32 {
-	if coins, err := self.Lasts(pt, base, quote, times, limit, end); err != nil {
+func (self *Coin) EMA(limit int, end time.Time) float32 {
+	if coins, err := self.Lasts(limit, end); err != nil {
 		return 0.0
 	} else {
 		log.Print(coins)
@@ -250,7 +228,7 @@ func (self *Coin) EMA(pt conset.PLAT, base conset.CCY, quote conset.CCY, times c
 		for i := 0; i < len(coins); i++ {
 			c := coins[i]
 			if i == 0 {
-				value = c.EMAStart(pt, base, quote, times, limit, c.CreateTime)
+				value = c.EMAStart(limit, c.CreateTime)
 			} else {
 				value = c.Close*factors + value*(1.0-factors)
 			}
@@ -260,8 +238,8 @@ func (self *Coin) EMA(pt conset.PLAT, base conset.CCY, quote conset.CCY, times c
 	}
 }
 
-func (self *Coin) EMAStart(pt conset.PLAT, base conset.CCY, quote conset.CCY, times conset.TIMES, limit int, end time.Time) float32 {
-	if coins, err := self.Lasts(pt, base, quote, times, limit, end); err != nil {
+func (self *Coin) EMAStart(limit int, end time.Time) float32 {
+	if coins, err := self.Lasts(limit, end); err != nil {
 		return 0.0
 	} else {
 		log.Print(coins)
@@ -285,8 +263,8 @@ func (self *Coin) EMAStart(pt conset.PLAT, base conset.CCY, quote conset.CCY, ti
 
 // 通道
 // N日移动平均线=N日收市价之和/N
-func (self *Coin) Chanel(pt conset.PLAT, base conset.CCY, quote conset.CCY, times conset.TIMES, limit int, end time.Time) (float32, float32) {
-	if coins, err := self.Lasts(pt, base, quote, times, limit, end); err != nil {
+func (self *Coin) Chanel(limit int, end time.Time) (float32, float32) {
+	if coins, err := self.Lasts(limit, end); err != nil {
 		return 0.0, 0.0
 	} else {
 		var low float32
@@ -314,8 +292,8 @@ func (self *Coin) Chanel(pt conset.PLAT, base conset.CCY, quote conset.CCY, time
 // 1、当前交易日的最高价与最低价间的波幅
 // 2、前一交易日收盘价与当个交易日最高价间的波幅
 // 3、前一交易日收盘价与当个交易日最低价间的波幅
-func (self *Coin) ATR(pt conset.PLAT, base conset.CCY, quote conset.CCY, times conset.TIMES, limit int, end time.Time) float32 {
-	if coins, err := self.Lasts(pt, base, quote, times, limit, end); err != nil {
+func (self *Coin) ATR(limit int, end time.Time) float32 {
+	if coins, err := self.Lasts(limit, end); err != nil {
 		return 0.0
 	} else {
 		var totalRange float32

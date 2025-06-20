@@ -126,8 +126,19 @@ func (self *Base) Pull(base conset.CCY, quote conset.CCY, period conset.PERIOD, 
 		var volume, _ = strconv.ParseFloat(arr[5], 32)
 
 		if k != 0 { // 最近时间一条有效的K线不保存
-			coin := &db.Coin{}
-			if err := coin.Create(self.Plat(), base, quote, times, float32(open), float32(close), float32(high), float32(low), float32(volume), timetamp); err != nil {
+			coin := &db.Coin{
+				Plat:       db.Plat(self.Plat()),
+				Symbol:     db.Symbol(base, quote),
+				Times:      db.Times(times),
+				Period:     db.Period(period),
+				Timestamp:  timetamp,
+				Open:       float32(open),
+				Close:      float32(close),
+				High:       float32(high),
+				Low:        float32(low),
+				Volume:     float32(volume),
+				CreateTime: time.Unix(timetamp/1000, 0)}
+			if err := coin.Create(); err != nil {
 				log.Printf("Create err: %+v", err)
 			}
 		}

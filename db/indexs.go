@@ -58,8 +58,9 @@ func (self *Indexs) Create(pt conset.PLAT, name string, bs conset.CCY, quote con
 }
 
 func (self *Indexs) IndexGetCreate(pt conset.PLAT, name string, bs conset.CCY, quote conset.CCY, times conset.TIMES, start time.Time, fc func() (float32, float32, float32, float32, float32)) (float32, float32, float32, float32, float32) {
-	coin := &Coin{}
-	lastCoin, _ := coin.Last(pt, bs, quote, times)
+	lastCoin := &Coin{Plat: Plat(pt), Symbol: Symbol(bs, quote), Times: Times(times)}
+	lastCoin.Last()
+
 	indexs, err := self.IndexLast(pt, name, bs, quote)
 	if err != nil {
 		log.Printf("IndexGetCreate err: %v", err)
