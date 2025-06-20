@@ -228,7 +228,8 @@ func (self *Coin) EMA(limit int, end time.Time) float32 {
 		for i := 0; i < len(coins); i++ {
 			c := coins[i]
 			if i == 0 {
-				value = c.EMAStart(limit, c.CreateTime)
+				firstCoin := &Coin{Plat: c.Plat, Symbol: c.Symbol, Period: c.Period, Times: c.Times}
+				value = firstCoin.EMAStart(limit, c.CreateTime)
 			} else {
 				value = c.Close*factors + value*(1.0-factors)
 			}
