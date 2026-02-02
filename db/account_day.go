@@ -1,8 +1,9 @@
 package db
 
 import (
-	"github.com/yueqingkong/openApi/conset"
 	"time"
+
+	"github.com/yueqingkong/openApi/conset"
 )
 
 type AccountDay struct {
@@ -12,7 +13,8 @@ type AccountDay struct {
 	Plat      string    `xorm:"varchar(255)"` // 平台名称
 	Symbol    string    `xorm:"varchar(255)"` // Token
 	Used      float32   `xorm:"float"`        // 总值
-	Total     float32   `xorm:"float"`        // 总值
+	Available float32   `xorm:"float"`
+	Total     float32   `xorm:"float"` // 总值
 	CreatedAt time.Time `xorm:"created"`
 	UpdatedAt time.Time `xorm:"updated"`
 }

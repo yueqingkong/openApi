@@ -2,7 +2,6 @@ package db
 
 import (
 	"errors"
-	"log"
 	"time"
 
 	"github.com/yueqingkong/openApi/conset"
@@ -15,11 +14,6 @@ type Indexs struct {
 	Name      string    `xorm:"varchar(255) unique(p-n-s-d) index(p-n-s)"` // 指标名称
 	Symbol    string    `xorm:"varchar(255) unique(p-n-s-d) index(p-n-s)"` // 币种
 	Date      string    `xorm:"varchar(255) unique(p-n-s-d)"`              // 格式化时间
-	P1        float32   `xorm:"p_1"`
-	P2        float32   `xorm:"p_2"`
-	P3        float32   `xorm:"p_3"`
-	P4        float32   `xorm:"p_4"`
-	P5        float32   `xorm:"p_5"`
 	Param     string    `xorm:"Text"`
 	CreatedAt time.Time `xorm:"created"`
 	UpdatedAt time.Time `xorm:"updated"`
@@ -57,51 +51,51 @@ func (self *Indexs) Create(pt conset.PLAT, name string, bs conset.CCY, quote con
 	return err
 }
 
-func (self *Indexs) IndexGetCreate(pt conset.PLAT, name string, bs conset.CCY, quote conset.CCY, times conset.TIMES, start time.Time, fc func() (float32, float32, float32, float32, float32)) (float32, float32, float32, float32, float32) {
-	lastCoin := &Coin{Plat: Plat(pt), Symbol: Symbol(bs, quote), Times: Times(times)}
-	lastCoin.Last()
+// func (self *Indexs) IndexGetCreate(pt conset.PLAT, name string, bs conset.CCY, quote conset.CCY, times conset.TIMES, start time.Time, fc func() (float32, float32, float32, float32, float32)) (float32, float32, float32, float32, float32) {
+// 	lastCoin := &Coin{Plat: Plat(pt), Symbol: Symbol(bs, quote), Times: Times(times)}
+// 	lastCoin.Last()
 
-	indexs, err := self.IndexLast(pt, name, bs, quote)
-	if err != nil {
-		log.Printf("IndexGetCreate err: %v", err)
-	}
+// 	indexs, err := self.IndexLast(pt, name, bs, quote)
+// 	if err != nil {
+// 		log.Printf("IndexGetCreate err: %v", err)
+// 	}
 
-	var timeDif int32
-	if times == conset.H_4 {
-		timeDif = 4
-	} else if times == conset.H_6 {
-		timeDif = 6
-	} else if times == conset.H_12 {
-		timeDif = 12
-	} else if times == conset.D_1 {
-		timeDif = 24
-	}
+// 	var timeDif int32
+// 	if times == conset.H_4 {
+// 		timeDif = 4
+// 	} else if times == conset.H_6 {
+// 		timeDif = 6
+// 	} else if times == conset.H_12 {
+// 		timeDif = 12
+// 	} else if times == conset.D_1 {
+// 		timeDif = 24
+// 	}
 
-	diff := lastCoin.CreateTime.Add(time.Duration(timeDif) * time.Hour).Sub(util.StringToTime(indexs.Date))
-	log.Printf("IndexGetCreate diff: %v", diff.String())
+// 	diff := lastCoin.CreateTime.Add(time.Duration(timeDif) * time.Hour).Sub(util.StringToTime(indexs.Date))
+// 	log.Printf("IndexGetCreate diff: %v", diff.String())
 
-	// lastCoin.CreateTime 会比 indexs.Date 慢一个周期
-	if err != nil || diff > time.Duration(10)*time.Second {
-		s, l, low, high, atr := fc()
+// 	// lastCoin.CreateTime 会比 indexs.Date 慢一个周期
+// 	if err != nil || diff > time.Duration(10)*time.Second {
+// 		s, l, low, high, atr := fc()
 
-		indexDate := time.Date(start.Year(), start.Month(), start.Day(), 0, 0, 0, 0, start.Location())
-		more := int32(start.Sub(indexDate).Hours())
-		integerHour := more - more%timeDif
-		indexDate = indexDate.Add(time.Duration(integerHour) * time.Hour)
+// 		indexDate := time.Date(start.Year(), start.Month(), start.Day(), 0, 0, 0, 0, start.Location())
+// 		more := int32(start.Sub(indexDate).Hours())
+// 		integerHour := more - more%timeDif
+// 		indexDate = indexDate.Add(time.Duration(integerHour) * time.Hour)
 
-		indexs.Id = 0
-		indexs.P1 = s
-		indexs.P2 = l
-		indexs.P3 = low
-		indexs.P4 = high
-		indexs.P5 = atr
-		if err = self.Create(pt, name, bs, quote, indexDate); err != nil {
-			log.Printf("%s  IndexCreate err: %v", name, err)
-		}
+// 		indexs.Id = 0
+// 		indexs.P1 = s
+// 		indexs.P2 = l
+// 		indexs.P3 = low
+// 		indexs.P4 = high
+// 		indexs.P5 = atr
+// 		if err = self.Create(pt, name, bs, quote, indexDate); err != nil {
+// 			log.Printf("%s  IndexCreate err: %v", name, err)
+// 		}
 
-		log.Printf("%s  IndexCreate s: %v l: %v low: %v high: %v atr: %v", name, s, l, low, high, atr)
-		return s, l, low, high, atr
-	}
+// 		log.Printf("%s  IndexCreate s: %v l: %v low: %v high: %v atr: %v", name, s, l, low, high, atr)
+// 		return s, l, low, high, atr
+// 	}
 
-	return indexs.P1, indexs.P2, indexs.P3, indexs.P4, indexs.P5
-}
+// 	return indexs.P1, indexs.P2, indexs.P3, indexs.P4, indexs.P5
+// }

@@ -305,8 +305,9 @@ func (self *Api) TopAverageIndex(ccy, begin, num, period string) [][]string {
 
 // 获取所有交易产品K线数据
 // 获取K线数据。K线数据按请求的粒度分组返回，K线数据每个粒度最多可获取最近1440条。
+// 分页返回的结果集数量，最大为300，不填默认返回100条
 // bar [1m/3m/5m/15m/30m/1H/2H/4H/6H/12H/1D/1W/1M/3M/6M/1Y]
-func (self *Api) Candles(instId, bar, before string) [][]string {
+func (self *Api) Candles(instId, bar, before string, limit int32) [][]string {
 	api := "/api/v5/market/candles"
 
 	params := make(map[string]string)
@@ -316,6 +317,9 @@ func (self *Api) Candles(instId, bar, before string) [][]string {
 	}
 	if before != "" {
 		params["before"] = before
+	}
+	if limit > 0 {
+		params["limit"] = util.Int32ToString(limit)
 	}
 	api = api + parseParams(params)
 

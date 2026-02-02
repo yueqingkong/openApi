@@ -109,7 +109,7 @@ func Side(period conset.PERIOD, direct conset.OPERATION) (string, string) {
 }
 
 func (self *Base) Pull(base conset.CCY, quote conset.CCY, period conset.PERIOD, times conset.TIMES, start time.Time) bool {
-	candles := self.Candles(self.InstId(base, quote, period), db.Times(times), self.before(start))
+	candles := self.Candles(self.InstId(base, quote, period), db.Times(times), self.before(start), 300)
 
 	if len(candles) == 0 {
 		log.Printf("Pull : 同步完成")

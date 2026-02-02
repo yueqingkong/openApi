@@ -35,8 +35,8 @@ func TestSupportCoin(t *testing.T) {
 func TestPull(t *testing.T) {
 	base := &Base{}
 	base.Init([]string{"", "", ""})
-	inst := base.InstId(conset.BTC, conset.USD, conset.SWAP)
-	candles := base.Candles(inst, "15m", "1675068300000")
+	inst := base.InstId(conset.BNB, conset.USDT, conset.SWAP)
+	candles := base.Candles(inst, "15m", "1675068300000", 300)
 	t.Log(candles)
 }
 

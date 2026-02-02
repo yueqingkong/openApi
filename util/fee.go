@@ -103,9 +103,9 @@ func Profit(bs, quote conset.CCY, op conset.OPERATION, price float32, lastprice 
 func UsdProfit(op conset.OPERATION, price float32, lastprice float32, size, value float32) float32 {
 	var profit float32
 	if op == conset.BUY_HIGH || op == conset.SELL_HIGH {
-		profit = (value/lastprice - value/price) * size
+		profit = value * size * (1.0/lastprice - 1.0/price)
 	} else if op == conset.BUY_LOW || op == conset.SELL_LOW {
-		profit = (value/price - value/lastprice) * size
+		profit = value * size * (1.0/price - 1.0/lastprice)
 	}
 	return profit
 }

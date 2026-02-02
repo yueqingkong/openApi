@@ -318,3 +318,68 @@ func (self *Coin) ATR(limit int, end time.Time) float32 {
 		return atr
 	}
 }
+
+// RSI 相对强弱指数 - 标准Wilder's RSI算法
+func (self *Coin) RSI(limit int, end time.Time) float32 {
+	// 获取更多历史数据以确保平滑计算的准确性
+	// 需要至少limit*2个数据点来进行完整的平滑计算
+	coins, err := self.Lasts(limit*2, end)
+	if err != nil {
+		log.Printf("RSI获取数据失败: %v", err)
+		return 0.0
+	}
+
+	if len(coins) < limit+1 {
+		log.Printf("RSI数据不足: 需要至少%d个数据点，实际只有%d个", limit+1, len(coins))
+		return 0.0
+	}
+
+	// 计算前limit个价格变化
+	var gains, losses float32
+	for i := 1; i <= limit; i++ {
+		change := coins[i].Close - coins[i-1].Close
+		if change > 0 {
+			gains += change
+		} else {
+			losses += -change
+		}
+	}
+
+	// 计算初始平均值
+	avgGains := gains / float32(limit)
+	avgLosses := losses / float32(limit)
+
+	// 使用Wilder's smoothing计算后续值
+	// 公式: SmoothedAvg = (PreviousAvg * (Period-1) + CurrentValue) / Period
+	for i := limit + 1; i < len(coins); i++ {
+		change := coins[i].Close - coins[i-1].Close
+		var currentGain, currentLoss float32
+
+		if change > 0 {
+			currentGain = change
+		} else {
+			currentLoss = -change
+		}
+
+		// Wilder's smoothing
+		avgGains = (avgGains*float32(limit-1) + currentGain) / float32(limit)
+		avgLosses = (avgLosses*float32(limit-1) + currentLoss) / float32(limit)
+	}
+
+	// 计算RSI
+	if avgLosses == 0 {
+		return 100.0
+	}
+
+	rs := avgGains / avgLosses
+	rsi := 100.0 - (100.0 / (1.0 + rs))
+
+	// 确保RSI值在合理范围内
+	if rsi < 0 {
+		rsi = 0
+	} else if rsi > 100 {
+		rsi = 100
+	}
+
+	return rsi
+}

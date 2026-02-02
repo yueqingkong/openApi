@@ -57,6 +57,10 @@ func Int32ToFloat(i int32) float32 {
 	return float32(i)
 }
 
+func Int32ToString(i int32) string {
+	return strconv.FormatInt(int64(i), 10)
+}
+
 // 标签格式化
 func TagFormat(b bool) string {
 	if b {

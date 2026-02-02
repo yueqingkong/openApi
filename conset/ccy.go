@@ -8,6 +8,10 @@ const (
 	BTC CCY = "BTC"
 	ETH CCY = "ETH"
 	LTC CCY = "LTC"
+	DOT CCY = "DOT"
+	ADA CCY = "ADA"
+	SOL CCY = "SOL"
+	BNB CCY = "BNB"
 )
 
 // U
