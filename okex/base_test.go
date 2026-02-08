@@ -117,7 +117,7 @@ func TestODInfo(t *testing.T) {
 	base := &Base{}
 	base.Init([]string{"", "", ""})
 
-	b, info := base.OrderInfo(conset.ETH, conset.USDT, conset.MARGIN, "611746420433305600")
+	b, info := base.OrderInfo(conset.ETH, conset.USDT, conset.MARGIN, "")
 	t.Log(b, info)
 }
 
@@ -153,7 +153,7 @@ func TestSubaccountTransfer(t *testing.T) {
 	base := &Base{}
 	base.Init([]string{"", "", ""})
 
-	balance := base.Transfer(conset.USDT, 1, conset.TRANSFER_INTERNAL, conset.TRADE_ACCOUNT, conset.FUND_ACCOUNT, "trendShort", "")
+	balance := base.Transfer(conset.USDT, 1, conset.TRANSFER_INTERNAL, conset.TRADE_ACCOUNT, conset.FUND_ACCOUNT, "", "")
 	t.Log("balance: ", balance[0])
 }
 
