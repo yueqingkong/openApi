@@ -20,3 +20,17 @@ const (
 	USDT CCY = "USDT"
 	USDC CCY = "USDC"
 )
+
+const (
+	PURCHASE = "purchase" //申购
+	REDEMPT  = "redempt"  //赎回
+)
+
+const (
+	FUND_ACCOUNT  = "6"  // 6：资金账户
+	TRADE_ACCOUNT = "18" // 18：交易账户
+)
+
+const (
+	TRANSFER_INTERNAL = "0"  // 0：账户内划转
+)

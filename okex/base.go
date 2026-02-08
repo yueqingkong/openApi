@@ -272,6 +272,32 @@ func (self *Base) BatchOrder(params []*OrderParam) (bool, []*OrderRes) {
 	return orders[0].SCode == "0", orders
 }
 
+func (self *Base) SavingsBalance(base conset.CCY) []*SavingsBalance {
+	return self.Api.SavingsBalance(strings.ToUpper(string(base)))
+}
+
+// side: purchase：申购 redempt：赎回
+func (self *Base) SavingsPurchaseRedempt(base conset.CCY, amt float32, side string, rate float32) []*SavingsPurchaseRedempt {
+	amtStr := util.FloatString(amt)
+	rateStr := ""
+	if rate > 0 {
+		rateStr = util.FloatString(rate * 100)
+	}
+
+	return self.Api.SavingsPurchaseRedempt(strings.ToUpper(string(base)), amtStr, side, rateStr)
+}
+
+// 资金划转
+func (self *Base) Transfer(base conset.CCY, amt float32, typ, from, to, fromSubAccount, toSubAccount string) []*Transfer {
+	amtStr := util.FloatString(amt)
+	return self.Api.Transfer(typ, strings.ToUpper(string(base)), amtStr, from, to, fromSubAccount, toSubAccount)
+}
+
+// 获取资金账户余额
+func (self *Base) AssetBalance(base conset.CCY) []*AssetBalance {
+	return self.Api.AssetBalance(strings.ToUpper(string(base)))
+}
+
 // limit 成交价格
 func priceLimit(direct conset.OPERATION, price, rate float32) float32 {
 	if rate == 0 {

@@ -130,6 +130,42 @@ func TestOrder(t *testing.T) {
 	t.Log(b, orderid)
 }
 
+// go test -v -run TestSavingsBalance
+func TestSavingsBalance(t *testing.T) {
+	base := &Base{}
+	base.Init([]string{"", "", ""})
+
+	balance := base.SavingsBalance(conset.USDT)
+	t.Log("balance: ", balance)
+}
+
+// go test -v -run TestSavingsPurchaseRedempt
+func TestSavingsPurchaseRedempt(t *testing.T) {
+	base := &Base{}
+	base.Init([]string{"", "", ""})
+
+	info := base.SavingsPurchaseRedempt(conset.USDT, 1, conset.REDEMPT, 0.01)
+	t.Log("info: ", info)
+}
+
+// go test -v -run TestSubaccountTransfer
+func TestSubaccountTransfer(t *testing.T) {
+	base := &Base{}
+	base.Init([]string{"", "", ""})
+
+	balance := base.Transfer(conset.USDT, 1, conset.TRANSFER_INTERNAL, conset.TRADE_ACCOUNT, conset.FUND_ACCOUNT, "trendShort", "")
+	t.Log("balance: ", balance[0])
+}
+
+// go test -v -run TestAssetBalance
+func TestAssetBalance(t *testing.T) {
+	base := &Base{}
+	base.Init([]string{"", "", ""})
+
+	balance := base.AssetBalance(conset.USDT)
+	t.Log("balance: ", balance[0])
+}
+
 // go test -v -run TestSubscribeTickers
 func TestSubscribeTickers(t *testing.T) {
 	base := &Base{}

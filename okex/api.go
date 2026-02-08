@@ -329,7 +329,8 @@ func (self *Api) Candles(instId, bar, before string, limit int32) [][]string {
 	return inst
 }
 
-// 获取账户中资金余额信息
+// 查看账户余额
+// 获取交易账户中资金余额信息。
 func (self *Api) balance(ccy string) []*Balance {
 	var api = "/api/v5/account/balance"
 
@@ -437,4 +438,86 @@ func parseParams(params map[string]string) string {
 		url = url + k + "=" + v + "&"
 	}
 	return url[:len(url)-1]
+}
+
+// 获取活期简单赚币余额
+func (self *Api) SavingsBalance(ccy string) []*SavingsBalance {
+	api := "/api/v5/finance/savings/balance"
+
+	params := make(map[string]string)
+	params["ccy"] = ccy
+	api = api + parseParams(params)
+
+	var url = okApi + api
+	inst := make([]*SavingsBalance, 0)
+	plat.Get(url, self.header("get", api, nil), &inst)
+	return inst
+}
+
+// (仅资金账户中的资产支持活期简单赚币申购) 活期简单赚币申购/赎回
+// ccy 币种名称，如 BTC
+// amt 申购/赎回 数量
+// side 操作类型 purchase：申购 redempt：赎回
+// rate (可选) 申购年利率，如 0.1代表10% 仅适用于申购，新申购的利率会覆盖上次申购的利率 参数取值范围在1%到365%之间
+func (self *Api) SavingsPurchaseRedempt(ccy, amt, side, rate string) []*SavingsPurchaseRedempt {
+	var api = "/api/v5/finance/savings/purchase-redempt"
+
+	params := make(map[string]string)
+	params["ccy"] = ccy
+	params["amt"] = amt
+	params["side"] = side
+	if rate != "" {
+		params["rate"] = rate
+	}
+
+	var url = okApi + api
+	results := make([]*SavingsPurchaseRedempt, 0)
+	plat.Post(url, self.header("post", api, params), params, &results)
+	return results
+}
+
+// 子账户间资金划转
+// type 划转类型
+// 0：账户内划转
+// 1：母账户转子账户(仅适用于母账户APIKey)
+// 2：子账户转母账户(仅适用于母账户APIKey)
+// 3：子账户转母账户(仅适用于子账户APIKey)
+// 4：子账户转子账户(仅适用于子账户APIKey，且目标账户需要是同一母账户下的其他子账户
+// from 转出账户 6：资金账户 18：交易账户
+// to 转入账户 6：资金账户 18：交易账户
+// subAcct 子账户名称 当type为1/2/4时，该字段必填
+func (self *Api) Transfer(typ, ccy, amt, from, to, fromSubAccount, subAcct string) []*Transfer {
+	var api = "/api/v5/asset/transfer"
+
+	params := make(map[string]string)
+	params["type"] = typ
+	params["ccy"] = ccy
+	params["amt"] = amt
+	params["from"] = from
+	params["to"] = to
+	if subAcct != "" {
+		params["subAcct"] = fromSubAccount
+	}
+
+	var url = okApi + api
+	results := make([]*Transfer, 0)
+	plat.Post(url, self.header("post", api, params), params, &results)
+	return results
+}
+
+// 获取资金账户余额
+// 获取资金账户所有资产列表，查询各币种的余额、冻结和可用等信息
+func (self *Api) AssetBalance(ccy string) []*AssetBalance {
+	var api = "/api/v5/asset/balances"
+
+	params := make(map[string]string)
+	if ccy != "" {
+		params["ccy"] = ccy
+	}
+	api = api + parseParams(params)
+
+	var url = okApi + api
+	result := make([]*AssetBalance, 0)
+	plat.Get(url, self.header("get", api, nil), &result)
+	return result
 }

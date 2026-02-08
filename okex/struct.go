@@ -203,3 +203,36 @@ type SupportCoinBody struct {
 	} `json:"data"`
 	Msg string `json:"msg"`
 }
+
+type SavingsBalance struct {
+	Amt        string `json:"amt"` // 币种数量
+	Ccy        string `json:"ccy"`
+	Earnings   string `json:"earnings"`   // 币种持仓收益
+	LoanAmt    string `json:"loanAmt"`    //已出借数量
+	PendingAmt string `json:"pendingAmt"` //未出借数量
+	Rate       string `json:"rate"`       // 用户配置的最低年化出借利率
+	RedemptAmt string `json:"redemptAmt"`
+}
+
+type SavingsPurchaseRedempt struct {
+	Amt  string `json:"amt"`
+	Ccy  string `json:"ccy"`
+	Rate string `json:"rate"`
+	Side string `json:"side"`
+}
+
+type Transfer struct {
+	Amt      string `json:"amt"`
+	Ccy      string `json:"ccy"`
+	ClientID string `json:"clientId"`
+	From     string `json:"from"`
+	To       string `json:"to"`
+	TransID  string `json:"transId"`
+}
+
+type AssetBalance struct {
+	AvailBal  string `json:"availBal"`
+	Bal       string `json:"bal"`
+	Ccy       string `json:"ccy"`
+	FrozenBal string `json:"frozenBal"`
+}
