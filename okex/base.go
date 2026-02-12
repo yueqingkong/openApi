@@ -210,13 +210,8 @@ func (self *Base) FundingRate(base conset.CCY, quote conset.CCY) (float32, float
 	return util.Float32(rates[0].FundingRate), util.Float32(rates[0].NextFundingRate)
 }
 
-func (self *Base) Balance(c conset.CCY) float32 {
-	bs := self.Api.balance(strings.ToUpper(string(c)))
-	if len(bs) == 0 {
-		return 0.0
-	}
-
-	return util.Float32(bs[0].TotalEq)
+func (self *Base) Balance(c conset.CCY) []*Balance {
+	return self.Api.balance(strings.ToUpper(string(c)))
 }
 
 func (self *Base) PullInstrument(period conset.PERIOD) {
