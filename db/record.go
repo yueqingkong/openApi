@@ -39,6 +39,7 @@ type Record struct {
 	TotalUse        float32   `xorm:"total_use"`         // 账户使用总金额
 	AccountBaseLoss float32   `xorm:"base_account_loss"` // 账户最大亏损率
 	AccountUseLoss  float32   `xorm:"use_account_loss"`  // 实际账户最大亏损率
+	HighWater       float32   `xorm:"-"`                 // 仓位最高点
 }
 
 func Operation(op int) string {

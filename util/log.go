@@ -1,6 +1,8 @@
 package util
 
 import (
+	"bytes"
+	"fmt"
 	"log"
 	"os"
 )
@@ -18,4 +20,21 @@ func Log() {
 	log.SetPrefix("[Error]")                            //日志前缀
 	log.SetFlags(log.Llongfile | log.Ldate | log.Ltime) //日志输出样式
 	log.Println("Hi file")
+}
+
+func LogFormat(p ...interface{}) string {
+	var s bytes.Buffer
+	for _, v := range p {
+		switch v.(type) {
+		case string:
+			s.WriteString(v.(string))
+		case float32:
+			s.WriteString(fmt.Sprintf("%.3f, ", v.(float32)))
+		case int:
+			s.WriteString(fmt.Sprintf("%d, ", v.(int)))
+		default:
+			s.WriteString(fmt.Sprintf("%v", v))
+		}
+	}
+	return s.String()
 }
