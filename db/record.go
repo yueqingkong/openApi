@@ -28,6 +28,7 @@ type Record struct {
 	LossPrice       float32   `xorm:"loss_price"`                                                   // 止损价
 	EstimatedLoss   float32   `xorm:"estimated_loss"`                                               // 预计亏损
 	Fee             float32   `xorm:"fee"`                                                          // 手续费
+	ClosePrice      float32   `xorm:"close_price"`                                                  // 平仓价
 	Detail          string    `xorm:"detail text"`                                                  // 描述 usd->token | ust<-token
 	Profit          float32   `xorm:"profit"`                                                       // 收益
 	ProfitRate      float32   `xorm:"profit_rate"`                                                  // 收益率(百分比 %)
